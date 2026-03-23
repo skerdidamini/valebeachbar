@@ -35,7 +35,7 @@ a {
   gap: 2rem;
   position: relative;
   background-image: linear-gradient(180deg, rgba(5, 11, 18, 0.9), rgba(5, 11, 18, 0.7)),
-    url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80');
+    url('assets/images/deck-view.jpeg');
   background-size: cover;
   background-position: center;
 }
@@ -288,6 +288,112 @@ main {
   transform: translateY(-6px);
   border-color: rgba(247, 184, 134, 0.7);
   box-shadow: 0 14px 40px rgba(3, 5, 7, 0.3);
+}
+
+.experiences {
+  padding-bottom: 2rem;
+}
+
+.experiences-grid,
+.experience-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.experience-card {
+  min-height: 220px;
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+  padding: 1.8rem;
+  color: #fff;
+  display: flex;
+  align-items: flex-end;
+  box-shadow: 0 30px 60px rgba(3, 5, 7, 0.35);
+  background-size: cover;
+  background-position: center;
+  text-transform: none;
+}
+
+.experience-card h3 {
+  margin: 0;
+  letter-spacing: 0.2rem;
+}
+
+.experience-card p {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.08rem;
+  line-height: 1.4;
+}
+
+.breakfast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.breakfast-grid article,
+.night-grid article {
+  border-radius: 28px;
+  min-height: 180px;
+  padding: 1.2rem;
+  color: #fff;
+  display: flex;
+  align-items: flex-end;
+  box-shadow: 0 20px 50px rgba(3, 5, 7, 0.35);
+  background-size: cover;
+  background-position: center;
+}
+
+.night-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.breakfast-grid h4,
+.night-grid h4 {
+  margin: 0;
+  letter-spacing: 0.2rem;
+}
+
+.breakfast-grid p,
+.night-grid p {
+  margin: 0.3rem 0 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18rem;
+}
+
+.experiences-grid article::after,
+.experience-card::after,
+.breakfast-grid article::after,
+.night-grid article::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(4, 7, 10, 0.65), rgba(4, 7, 10, 0.05));
+  pointer-events: none;
+}
+
+.experiences-grid article div,
+.breakfast-grid article div,
+.experience-card div,
+.night-grid article div {
+  position: relative;
+  z-index: 1;
+}
+
+.experiences-grid article:hover,
+.experience-card:hover,
+.breakfast-grid article:hover,
+.night-grid article:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 65px rgba(3, 5, 7, 0.45);
 }
 
 .sunset {
