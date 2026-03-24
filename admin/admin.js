@@ -1,10 +1,29 @@
 ﻿const PRICE_PER_UMBRELLA = 600;
 const umbrellaRows = [13, 13, 13, 13, 13, 13, 13, 9];
-const auth = window.firebaseAuth;
-const db = window.firebaseDB;
-const reservationsRef = db?.collection("reservations");
-const auditRef = db?.collection("auditLogs");
-const usersRef = db?.collection("users");
+let auth = null;
+let db = null;
+let auditRef = null;
+let usersRef = null;
+
+function waitForFirebase() {
+  if (window.firebaseAuth && window.firebaseDB) {
+    auth = window.firebaseAuth;
+    db = window.firebaseDB;
+    reservationsRef = db.collection("reservations");
+auditRef = db.collection("auditLogs");
+usersRef = db.collection("users");
+
+    console.log("Firebase loaded ✅");
+
+    init(); // start app vetëm kur Firebase është gati
+  } else {
+    console.log("Waiting for Firebase...");
+    setTimeout(waitForFirebase, 100);
+  }
+}
+let reservationsRef = null;
+let auditRef = null;
+let usersRef = null;
 
 let reservations = [];
 let auditEvents = [];
@@ -661,4 +680,4 @@ function init() {
   renderAll();
 }
 
-init();
+waitForFirebase();
