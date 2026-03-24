@@ -1,1 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vale Beach Bar · Admin Umbrella Module</title>
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <div class="admin-app" id="adminApp">
+      <header class="admin-header">
+        <div class="logo">Vale Admin</div>
+        <div class="session">
+          <span id="sessionUser">Not logged in</span>
+          <button id="logoutBtn" class="ghost-btn">Logout</button>
+        </div>
+      </header>
 
+      <main class="admin-main" id="adminMain">
+        <section class="panel dashboard-panel" id="todaySection">
+          <div class="panel-head">
+            <h2>Today Dashboard</h2>
+            <div class="date-switch">
+              <button id="todayBtn">Today</button>
+              <span id="displayedDate"></span>
+            </div>
+          </div>
+          <div class="dashboard-grid">
+            <div class="stat-card">
+              <p class="label">Reserved</p>
+              <strong id="reservedCount">0</strong>
+            </div>
+            <div class="stat-card">
+              <p class="label">Occupied</p>
+              <strong id="occupiedCount">0</strong>
+            </div>
+            <div class="stat-card">
+              <p class="label">Free</p>
+              <strong id="freeCount">100</strong>
+            </div>
+            <div class="stat-card">
+              <p class="label">Revenue (ALL)</p>
+              <strong id="revenueTotal">0</strong>
+            </div>
+          </div>
+
+          <div class="split-grid">
+            <div class="calendar-panel">
+              <div class="panel-head">
+                <h3>Calendar</h3>
+                <span id="calendarLegend">Green ≤70, Red ≥71</span>
+              </div>
+              <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+
+            <div class="grid-panel">
+              <div class="panel-head">
+                <h3>Umbrella map</h3>
+                <p>Rows 1-8, numbered boxes show current status.</p>
+              </div>
+              <div class="rows-wrapper" id="umbrellaRows"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel detail-panel" id="detailSection">
+          <div class="panel-head">
+            <h2>Umbrella detail & actions</h2>
+            <span id="selectedUmbrellaLabel">Select an umbrella</span>
+          </div>
+          <div class="detail-content">
+            <div class="detail-status" id="detailStatus"></div>
+            <form id="reserveForm" class="action-form">
+              <h4>Reserve</h4>
+              <label>
+                Guest name *
+                <input type="text" name="guestName" required />
+              </label>
+              <label>
+                Phone
+                <input type="tel" name="phone" />
+              </label>
+              <label>
+                Guest count
+                <input type="number" name="guestCount" min="1" />
+              </label>
+              <label>
+                Notes
+                <textarea name="notes" rows="2"></textarea>
+              </label>
+              <button type="submit">Reserve umbrella</button>
+            </form>
+            <div class="action-row">
+              <button id="markOccupiedBtn">Mark occupied</button>
+              <button id="releaseUmbrellaBtn" class="ghost-btn">Release umbrella</button>
+            </div>
+            <div class="action-row">
+              <button id="markArrivedBtn" class="secondary">Mark arrived</button>
+              <button id="deleteEntryBtn" class="ghost-btn">Delete entry</button>
+            </div>
+            <div class="detail-log" id="detailLog"></div>
+          </div>
+        </section>
+
+        <section class="panel staff-panel" id="staffSection">
+          <div class="panel-head">
+            <h2>Staff totals</h2>
+          </div>
+          <div id="staffTotals" class="list-grid"></div>
+        </section>
+
+        <section class="panel report-panel" id="reportSection">
+          <div class="panel-head">
+            <h2>End of day report</h2>
+          </div>
+          <div class="report-grid">
+            <div>
+              <p>Total reserved</p>
+              <strong id="reportReserved">0</strong>
+            </div>
+            <div>
+              <p>Total occupied</p>
+              <strong id="reportOccupied">0</strong>
+            </div>
+            <div>
+              <p>Revenue (ALL)</p>
+              <strong id="reportRevenue">0</strong>
+            </div>
+            <div>
+              <p>Released today</p>
+              <strong id="reportReleased">0</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel audit-panel" id="auditSection">
+          <div class="panel-head">
+            <h2>Audit log</h2>
+          </div>
+          <div id="auditLog" class="audit-list"></div>
+        </section>
+
+        <section class="panel users-panel" id="usersSection">
+          <div class="panel-head">
+            <h2>Admin user management</h2>
+          </div>
+          <form id="userForm" class="action-form user-form">
+            <label>
+              Name
+              <input type="text" name="name" required />
+            </label>
+          <label>
+            Username
+            <input type="text" name="username" required />
+          </label>
+          <label>
+            Firebase UID
+            <input type="text" name="authUid" placeholder="Paste Auth UID" required />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" required />
+            </label>
+            <label>
+              Role
+              <select name="role">
+                <option value="staff">Staff</option>
+                <option value="admin">Admin</option>
+              </select>
+            </label>
+            <button type="submit">Add user</button>
+          </form>
+          <div id="userList" class="list-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="login-overlay" id="loginOverlay">
+      <form class="login-form" id="loginForm">
+        <h2>Vale Beach Admin Login</h2>
+        <p class="login-hint" id="loginMessage">Enter your email to continue.</p>
+        <label>
+          Email
+          <input type="email" name="email" placeholder="name@vale.beach" required />
+        </label>
+        <label>
+          Password
+          <input type="password" name="password" placeholder="••••••••" required />
+        </label>
+        <button type="submit">Enter admin area</button>
+      </form>
+    </div>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
