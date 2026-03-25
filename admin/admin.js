@@ -1,4 +1,4 @@
-﻿const PRICE_PER_UMBRELLA = 600;
+const PRICE_PER_UMBRELLA = 600;
 const umbrellaRows = [13, 13, 13, 13, 13, 13, 13, 9];
 const TOTAL_UMBRELLAS = umbrellaRows.reduce((sum, row) => sum + row, 0);
 
@@ -10,6 +10,93 @@ let usersRef = null;
 
 let appInitialized = false;
 let authListenerAttached = false;
+let listenersActive = false;
+let reservationsUnsub = null;
+let auditUnsub = null;
+let usersUnsub = null;
+
+let reservations = [];
+let auditEvents = [];
+let userDocs = [];
+let currentUser = null;
+let selectedDate = new Date();
+let selectedUmbrella = null;
+let loginNoticeOverride = "";
+
+let loginOverlay = null;
+let loginForm = null;
+let logoutBtn = null;
+let todayBtn = null;
+let displayedDate = null;
+let calendarGrid = null;
+let umbrellaRowsContainer = null;
+let reservedCountEl = null;
+let occupiedCountEl = null;
+let freeCountEl = null;
+let revenueTotalEl = null;
+let detailStatus = null;
+let selectedUmbrellaLabel = null;
+let reserveForm = null;
+let markOccupiedBtn = null;
+let markArrivedBtn = null;
+let releaseUmbrellaBtn = null;
+let deleteEntryBtn = null;
+let detailLog = null;
+let staffTotalsEl = null;
+let auditLogEl = null;
+let reportReservedEl = null;
+let reportOccupiedEl = null;
+let reportRevenueEl = null;
+let reportReleasedEl = null;
+let userListEl = null;
+let userForm = null;
+let sessionUser = null;
+let loginMessage = null;
+let domCached = false;
+let appStarted = false;
+const STATUS_DEFAULT_MESSAGE = "Enter your email to continue.";
+
+function cacheDOMElements() {
+  if (domCached) return;
+  domCached = true;
+
+  loginOverlay = document.getElementById("loginOverlay");
+  loginForm = document.getElementById("loginForm");
+  logoutBtn = document.getElementById("logoutBtn");
+  todayBtn = document.getElementById("todayBtn");
+  displayedDate = document.getElementById("displayedDate");
+  calendarGrid = document.getElementById("calendarGrid");
+  umbrellaRowsContainer = document.getElementById("umbrellaRows");
+  reservedCountEl = document.getElementById("reservedCount");
+  occupiedCountEl = document.getElementById("occupiedCount");
+  freeCountEl = document.getElementById("freeCount");
+  revenueTotalEl = document.getElementById("revenueTotal");
+  detailStatus = document.getElementById("detailStatus");
+  selectedUmbrellaLabel = document.getElementById("selectedUmbrellaLabel");
+  reserveForm = document.getElementById("reserveForm");
+  markOccupiedBtn = document.getElementById("markOccupiedBtn");
+  markArrivedBtn = document.getElementById("markArrivedBtn");
+  releaseUmbrellaBtn = document.getElementById("releaseUmbrellaBtn");
+  deleteEntryBtn = document.getElementById("deleteEntryBtn");
+  detailLog = document.getElementById("detailLog");
+  staffTotalsEl = document.getElementById("staffTotals");
+  auditLogEl = document.getElementById("auditLog");
+  reportReservedEl = document.getElementById("reportReserved");
+  reportOccupiedEl = document.getElementById("reportOccupied");
+  reportRevenueEl = document.getElementById("reportRevenue");
+  reportReleasedEl = document.getElementById("reportReleased");
+  userListEl = document.getElementById("userList");
+  userForm = document.getElementById("userForm");
+  sessionUser = document.getElementById("sessionUser");
+  loginMessage = document.getElementById("loginMessage");
+}
+
+function startApp() {
+  if (appStarted) return;
+  appStarted = true;
+  cacheDOMElements();
+  waitForFirebase();
+}
 
 function waitForFirebase() {
   if (window.firebaseAuth && window.firebaseDB) {
@@ -21,55 +108,12 @@ function waitForFirebase() {
 
     console.log("Firebase loaded");
     init();
-  } else {
-    console.log("Waiting for Firebase...");
-    setTimeout(waitForFirebase, 100);
+    return;
   }
+
+  console.log("Waiting for Firebase...");
+  setTimeout(waitForFirebase, 100);
 }
-
-let reservations = [];
-let auditEvents = [];
-let userDocs = [];
-let currentUser = null;
-let selectedDate = new Date();
-let selectedUmbrella = null;
-
-const loginOverlay = document.getElementById("loginOverlay");
-const loginForm = document.getElementById("loginForm");
-const logoutBtn = document.getElementById("logoutBtn");
-const todayBtn = document.getElementById("todayBtn");
-const displayedDate = document.getElementById("displayedDate");
-const calendarGrid = document.getElementById("calendarGrid");
-const umbrellaRowsContainer = document.getElementById("umbrellaRows");
-const reservedCountEl = document.getElementById("reservedCount");
-const occupiedCountEl = document.getElementById("occupiedCount");
-const freeCountEl = document.getElementById("freeCount");
-const revenueTotalEl = document.getElementById("revenueTotal");
-const detailStatus = document.getElementById("detailStatus");
-const selectedUmbrellaLabel = document.getElementById("selectedUmbrellaLabel");
-const reserveForm = document.getElementById("reserveForm");
-const markOccupiedBtn = document.getElementById("markOccupiedBtn");
-const markArrivedBtn = document.getElementById("markArrivedBtn");
-const releaseUmbrellaBtn = document.getElementById("releaseUmbrellaBtn");
-const deleteEntryBtn = document.getElementById("deleteEntryBtn");
-const detailLog = document.getElementById("detailLog");
-const staffTotalsEl = document.getElementById("staffTotals");
-const auditLogEl = document.getElementById("auditLog");
-const reportReservedEl = document.getElementById("reportReserved");
-const reportOccupiedEl = document.getElementById("reportOccupied");
-const reportRevenueEl = document.getElementById("reportRevenue");
-const reportReleasedEl = document.getElementById("reportReleased");
-const userListEl = document.getElementById("userList");
-const userForm = document.getElementById("userForm");
-const sessionUser = document.getElementById("sessionUser");
-const loginMessage = document.getElementById("loginMessage");
-const STATUS_DEFAULT_MESSAGE = "Enter your email to continue.";
-
-let reservationsUnsub = null;
-let auditUnsub = null;
-let usersUnsub = null;
-let listenersActive = false;
-let loginNoticeOverride = "";
 
 function formatDateKey(date) {
   const year = date.getFullYear();
@@ -94,6 +138,7 @@ function pulseElement(el) {
 }
 
 function updateDisplayedDate() {
+  if (!displayedDate) return;
   const options = { weekday: "short", month: "short", day: "numeric", year: "numeric" };
   displayedDate.textContent = selectedDate.toLocaleDateString("en-GB", options);
 }
@@ -137,7 +182,9 @@ function getGuestBadge(name) {
 function sumRevenue(entries) {
   return entries.reduce((total, entry) => total + (Number(entry.amount) || 0), 0);
 }
+
 function gatherGuestDetails(existingEntry = null, allowEmptyName = false) {
+  if (!reserveForm) return null;
   const formData = new FormData(reserveForm);
   const rawName = existingEntry?.guestName || formData.get("guestName") || "";
   const guestName = rawName.trim();
@@ -158,6 +205,7 @@ function gatherGuestDetails(existingEntry = null, allowEmptyName = false) {
 
   return { guestName, phone, guestCount, notes };
 }
+
 function resolveName(id) {
   return (userDocs.find((user) => user.id === id) || {}).name || "Unknown";
 }
@@ -182,6 +230,7 @@ async function audit(action, entry) {
 }
 
 function renderCalendar() {
+  if (!calendarGrid) return;
   calendarGrid.innerHTML = "";
   const year = selectedDate.getFullYear();
   const month = selectedDate.getMonth();
@@ -218,6 +267,7 @@ function getDayColorClass(key) {
 }
 
 function renderUmbrellas() {
+  if (!umbrellaRowsContainer) return;
   umbrellaRowsContainer.innerHTML = "";
   let umbrellaNumber = 1;
 
@@ -256,8 +306,8 @@ function isBusyStatus(status) {
   return status === "reserved" || status === "occupied";
 }
 
-
 function renderStats() {
+  if (!reservedCountEl || !occupiedCountEl || !freeCountEl || !revenueTotalEl) return;
   const entries = getEntries(selectedDate);
   const reserved = entries.filter((entry) => entry.status === "reserved").length;
   const occupied = entries.filter((entry) => entry.status === "occupied").length;
@@ -275,6 +325,7 @@ function renderStats() {
 }
 
 function renderDetailPanel() {
+  if (!detailStatus || !selectedUmbrellaLabel || !detailLog) return;
   detailLog.innerHTML = "";
   selectedUmbrellaLabel.textContent = selectedUmbrella
     ? `Umbrella ${selectedUmbrella}`
@@ -287,12 +338,12 @@ function renderDetailPanel() {
     detailStatus.textContent = "Free";
     detailStatus.classList.add("free");
     detailLog.textContent = "Select a free umbrella to reserve or occupy.";
-    reserveForm.reset();
+    reserveForm?.reset();
     return;
   }
 
   const guestLabel = entry.guestName || "Walk-in";
-  detailStatus.textContent = `${entry.status.toUpperCase()} · ${guestLabel}`;
+  detailStatus.textContent = `${entry.status.toUpperCase()} � ${guestLabel}`;
   detailStatus.classList.add(entry.status);
 
   const badge = getGuestBadge(entry.guestName);
@@ -315,14 +366,18 @@ function renderDetailPanel() {
 
   detailLog.innerHTML = history.map((line) => `<div>${line}</div>`).join("");
 
-  reserveForm.querySelector('[name="guestName"]').value = entry.guestName || "";
-  reserveForm.querySelector('[name="phone"]').value = entry.phone || "";
-  reserveForm.querySelector('[name="guestCount"]').value = entry.guestCount || "";
-  reserveForm.querySelector('[name="notes"]').value = entry.notes || "";
+  if (reserveForm) {
+    reserveForm.querySelector('[name="guestName"]').value = entry.guestName || "";
+    reserveForm.querySelector('[name="phone"]').value = entry.phone || "";
+    reserveForm.querySelector('[name="guestCount"]').value = entry.guestCount || "";
+    reserveForm.querySelector('[name="notes"]').value = entry.notes || "";
+  }
 
   pulseElement(detailStatus);
 }
+
 function renderStaffTotals() {
+  if (!staffTotalsEl) return;
   const totals = {};
 
   reservations.forEach((entry) => {
@@ -357,6 +412,7 @@ function renderStaffTotals() {
 }
 
 function renderReport() {
+  if (!reportReservedEl || !reportOccupiedEl || !reportRevenueEl || !reportReleasedEl) return;
   const entries = getEntries(selectedDate);
   const reserved = entries.filter((entry) => entry.status === "reserved").length;
   const occupied = entries.filter((entry) => entry.status === "occupied").length;
@@ -371,6 +427,7 @@ function renderReport() {
 }
 
 function renderAuditLog() {
+  if (!auditLogEl) return;
   auditLogEl.innerHTML = "";
 
   if (!currentUser || currentUser.role !== "admin") {
@@ -381,7 +438,7 @@ function renderAuditLog() {
   auditEvents.slice(0, 8).forEach((event) => {
     const item = document.createElement("div");
     item.className = "audit-item";
-    item.textContent = `${event.action} Â· Umbrella ${event.umbrellaNumber} Â· ${event.userName} Â· ${event.timestamp}`;
+    item.textContent = `${event.action} � Umbrella ${event.umbrellaNumber} � ${event.userName} � ${event.timestamp}`;
     auditLogEl.appendChild(item);
   });
 
@@ -389,6 +446,7 @@ function renderAuditLog() {
 }
 
 function renderUserList() {
+  if (!userListEl) return;
   userListEl.innerHTML = "";
 
   const displayUsers = [...userDocs];
@@ -405,6 +463,7 @@ function renderUserList() {
 }
 
 function updateActions() {
+  if (!markArrivedBtn || !markOccupiedBtn || !releaseUmbrellaBtn || !deleteEntryBtn) return;
   const entry = selectedUmbrella ? getEntry(selectedDate, selectedUmbrella) : null;
   const activeEntry = entry && entry.status !== "released" ? entry : null;
 
@@ -490,8 +549,7 @@ async function handleReserve(event) {
     });
 
     await audit(activeExisting ? "Update reservation" : "Reserve", payload);
-    reserveForm.reset();
-    renderAll();
+    reserveForm?.reset();
   } catch (error) {
     console.error("Reserve error:", error);
     alert(
@@ -574,7 +632,6 @@ async function handleOccupy(arrived = false) {
     });
 
     await audit(arrived ? "Arrived" : "Occupy", payload);
-    renderAll();
   } catch (error) {
     console.error("Occupy error:", error);
     alert(
@@ -583,8 +640,8 @@ async function handleOccupy(arrived = false) {
         : `Could not update occupancy: ${error?.message || "unknown error"}`
     );
   }
-}\r
-\r
+}
+
 async function handleRelease() {
   if (!currentUser || !selectedUmbrella) return;
 
@@ -654,7 +711,6 @@ async function handleLogin(event) {
   return false;
 }
 
-
 async function handleLogout() {
   if (!auth) return;
 
@@ -679,7 +735,7 @@ async function handleUserForm(event) {
   const authUid = (formData.get("authUid") || "").trim();
   const role = formData.get("role");
 
-if (!name || !username || !authUid) return;
+  if (!name || !username || !authUid) return;
 
   const duplicate = userDocs.find((user) => user.username === username);
   if (duplicate) return alert("Username taken");
@@ -727,7 +783,7 @@ function renderAll() {
 function subscribeReservations() {
   if (!reservationsRef) return;
 
-  if (reservationsUnsub) reservationsUnsub();
+  reservationsUnsub?.();
 
   reservationsUnsub = reservationsRef
     .orderBy("date")
@@ -744,7 +800,7 @@ function subscribeReservations() {
 function subscribeAuditLog() {
   if (!auditRef) return;
 
-  if (auditUnsub) auditUnsub();
+  auditUnsub?.();
 
   auditUnsub = auditRef
     .orderBy("timestamp", "desc")
@@ -761,7 +817,7 @@ function subscribeAuditLog() {
 function subscribeUsers() {
   if (!usersRef) return;
 
-  if (usersUnsub) usersUnsub();
+  usersUnsub?.();
 
   usersUnsub = usersRef.onSnapshot(
     (snapshot) => {
@@ -787,21 +843,13 @@ function startRealtimeListeners() {
 }
 
 function stopRealtimeListeners() {
-  if (reservationsUnsub) {
-    reservationsUnsub();
-    reservationsUnsub = null;
-  }
+  reservationsUnsub?.();
+  auditUnsub?.();
+  usersUnsub?.();
 
-  if (auditUnsub) {
-    auditUnsub();
-    auditUnsub = null;
-  }
-
-  if (usersUnsub) {
-    usersUnsub();
-    usersUnsub = null;
-  }
-
+  reservationsUnsub = null;
+  auditUnsub = null;
+  usersUnsub = null;
   listenersActive = false;
 }
 
@@ -818,8 +866,8 @@ function attachAuthListener() {
 
     if (!user) {
       currentUser = null;
-      sessionUser.textContent = "Not logged in";
-      loginOverlay.classList.remove("hidden");
+      if (sessionUser) sessionUser.textContent = "Not logged in";
+      loginOverlay?.classList.remove("hidden");
       if (!loginNoticeOverride) resetLoginMessage();
       renderAll();
       return;
@@ -848,8 +896,8 @@ function attachAuthListener() {
       return;
     }
 
-    sessionUser.textContent = `${currentUser.name} (${currentUser.role})`;
-    loginOverlay.classList.add("hidden");
+    if (sessionUser) sessionUser.textContent = `${currentUser.name} (${currentUser.role})`;
+    loginOverlay?.classList.add("hidden");
     resetLoginMessage();
     startRealtimeListeners();
     renderAll();
@@ -860,62 +908,35 @@ function init() {
   if (appInitialized) return;
   appInitialized = true;
 
-  loginForm.setAttribute("action", "javascript:void(0);");
-  loginForm.setAttribute("method", "post");
-  loginForm.addEventListener("submit", handleLogin);
-  logoutBtn.addEventListener("click", handleLogout);
-  reserveForm.addEventListener("submit", handleReserve);
-  markOccupiedBtn.addEventListener("click", () => handleOccupy(false));
-  markArrivedBtn.addEventListener("click", () => handleOccupy(true));
-  releaseUmbrellaBtn.addEventListener("click", handleRelease);
-  deleteEntryBtn.addEventListener("click", handleDelete);
+  if (loginForm) {
+    loginForm.setAttribute("action", "javascript:void(0);");
+    loginForm.setAttribute("method", "post");
+    loginForm.addEventListener("submit", handleLogin);
+  }
 
-  todayBtn.addEventListener("click", () => {
+  logoutBtn?.addEventListener("click", handleLogout);
+  reserveForm?.addEventListener("submit", handleReserve);
+  markOccupiedBtn?.addEventListener("click", () => handleOccupy(false));
+  markArrivedBtn?.addEventListener("click", () => handleOccupy(true));
+  releaseUmbrellaBtn?.addEventListener("click", handleRelease);
+  deleteEntryBtn?.addEventListener("click", handleDelete);
+  todayBtn?.addEventListener("click", () => {
     selectedDate = new Date();
     selectedUmbrella = null;
     updateDisplayedDate();
     renderAll();
   });
+  userForm?.addEventListener("submit", handleUserForm);
 
-  userForm.addEventListener("submit", handleUserForm);
-  sessionUser.textContent = "Not logged in";
+  if (sessionUser) sessionUser.textContent = "Not logged in";
   resetLoginMessage();
   updateDisplayedDate();
   attachAuthListener();
   renderAll();
 }
 
-waitForFirebase();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", startApp);
+} else {
+  startApp();
+}
