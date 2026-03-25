@@ -1,4 +1,4 @@
-const PRICE_PER_UMBRELLA = 600;
+﻿const PRICE_PER_UMBRELLA = 600;
 const umbrellaRows = [13, 13, 13, 13, 13, 13, 13, 9];
 const TOTAL_UMBRELLAS = umbrellaRows.reduce((sum, row) => sum + row, 0);
 
@@ -134,11 +134,14 @@ function getGuestBadge(name) {
   return "";
 }
 
-function gatherGuestDetails(existingEntry = null) {
+function sumRevenue(entries) {
+  return entries.reduce((total, entry) => total + (Number(entry.amount) || 0), 0);
+}
+function gatherGuestDetails(existingEntry = null, allowEmptyName = false) {
   const formData = new FormData(reserveForm);
   const rawName = existingEntry?.guestName || formData.get("guestName") || "";
   const guestName = rawName.trim();
-  if (!guestName) return null;
+  if (!guestName && !allowEmptyName) return null;
 
   const phone = existingEntry?.phone || (formData.get("phone") || "").trim();
   const guestCount = existingEntry?.guestCount || (formData.get("guestCount") || "").trim();
@@ -155,7 +158,6 @@ function gatherGuestDetails(existingEntry = null) {
 
   return { guestName, phone, guestCount, notes };
 }
-
 function resolveName(id) {
   return (userDocs.find((user) => user.id === id) || {}).name || "Unknown";
 }
@@ -227,6 +229,7 @@ function renderUmbrellas() {
       const currentUmbrella = umbrellaNumber;
       const box = document.createElement("div");
       box.className = "umbrella-box";
+      box.dataset.number = currentUmbrella;
 
       const entry = getEntry(selectedDate, currentUmbrella);
       const visualStatus = !entry || entry.status === "released" ? "free" : entry.status;
@@ -234,10 +237,10 @@ function renderUmbrellas() {
       box.classList.add(visualStatus);
       box.textContent = currentUmbrella;
 
-      if (selectedUmbrella === currentUmbrella) box.classList.add("active");
+      if (Number(selectedUmbrella) === currentUmbrella) box.classList.add("active");
 
-      box.addEventListener("click", () => {
-        selectedUmbrella = currentUmbrella;
+      box.addEventListener("click", (event) => {
+        selectedUmbrella = Number(event.currentTarget.dataset.number);
         renderAll();
       });
 
@@ -249,6 +252,11 @@ function renderUmbrellas() {
   });
 }
 
+function isBusyStatus(status) {
+  return status === "reserved" || status === "occupied";
+}
+
+
 function renderStats() {
   const entries = getEntries(selectedDate);
   const reserved = entries.filter((entry) => entry.status === "reserved").length;
@@ -257,7 +265,8 @@ function renderStats() {
   reservedCountEl.textContent = reserved;
   occupiedCountEl.textContent = occupied;
   freeCountEl.textContent = TOTAL_UMBRELLAS - reserved - occupied;
-  revenueTotalEl.textContent = occupied * PRICE_PER_UMBRELLA;
+  const revenue = sumRevenue(entries);
+  revenueTotalEl.textContent = revenue;
 
   pulseElement(reservedCountEl);
   pulseElement(occupiedCountEl);
@@ -282,7 +291,8 @@ function renderDetailPanel() {
     return;
   }
 
-  detailStatus.textContent = `${entry.status.toUpperCase()} · ${entry.guestName}`;
+  const guestLabel = entry.guestName || "Walk-in";
+  detailStatus.textContent = `${entry.status.toUpperCase()} · ${guestLabel}`;
   detailStatus.classList.add(entry.status);
 
   const badge = getGuestBadge(entry.guestName);
@@ -312,7 +322,6 @@ function renderDetailPanel() {
 
   pulseElement(detailStatus);
 }
-
 function renderStaffTotals() {
   const totals = {};
 
@@ -354,7 +363,8 @@ function renderReport() {
 
   reportReservedEl.textContent = reserved;
   reportOccupiedEl.textContent = occupied;
-  reportRevenueEl.textContent = occupied * PRICE_PER_UMBRELLA;
+  const reportRevenue = sumRevenue(entries);
+  reportRevenueEl.textContent = reportRevenue;
   reportReleasedEl.textContent = auditEvents.filter(
     (event) => event.action === "Release" && event.date === formatDateKey(selectedDate)
   ).length;
@@ -371,7 +381,7 @@ function renderAuditLog() {
   auditEvents.slice(0, 8).forEach((event) => {
     const item = document.createElement("div");
     item.className = "audit-item";
-    item.textContent = `${event.action} · Umbrella ${event.umbrellaNumber} · ${event.userName} · ${event.timestamp}`;
+    item.textContent = `${event.action} Â· Umbrella ${event.umbrellaNumber} Â· ${event.userName} Â· ${event.timestamp}`;
     auditLogEl.appendChild(item);
   });
 
@@ -449,23 +459,46 @@ async function handleReserve(event) {
     date: dateKey,
   };
 
-  try {
-    if (!reservationsRef) throw new Error("Firestore not ready");
+  const targetDocId = activeExisting?.id || (existing?.status === "released" ? existing.id : null);
 
-    if (activeExisting) {
-      await reservationsRef.doc(activeExisting.id).update(payload);
-    } else if (existing && existing.status === "released") {
-      await reservationsRef.doc(existing.id).update(payload);
-    } else {
-      await reservationsRef.add(payload);
-    }
+  try {
+    if (!reservationsRef || !db) throw new Error("Firestore not ready");
+
+    await db.runTransaction(async (transaction) => {
+      const conflictSnapshot = await transaction.get(
+        reservationsRef
+          .where("date", "==", dateKey)
+          .where("umbrellaNumber", "==", selectedUmbrella)
+      );
+
+      const conflictDoc = conflictSnapshot.docs.find(
+        (doc) => doc.id !== targetDocId && isBusyStatus(doc.data().status)
+      );
+
+      if (conflictDoc) {
+        throw new Error("This umbrella is already booked for that date.");
+      }
+
+      let targetRef = targetDocId ? reservationsRef.doc(targetDocId) : null;
+
+      if (!targetRef) {
+        const reusable = conflictSnapshot.docs.find((doc) => !isBusyStatus(doc.data().status));
+        targetRef = reusable ? reusable.ref : reservationsRef.doc();
+      }
+
+      transaction.set(targetRef, payload);
+    });
 
     await audit(activeExisting ? "Update reservation" : "Reserve", payload);
     reserveForm.reset();
     renderAll();
   } catch (error) {
     console.error("Reserve error:", error);
-    alert(`Could not save reservation: ${error?.message || "unknown error"}`);
+    alert(
+      error.message.includes("booked")
+        ? "Umbrella already booked for that date. Refresh to see the latest availability."
+        : `Could not save reservation: ${error?.message || "unknown error"}`
+    );
   }
 }
 
@@ -483,7 +516,8 @@ async function handleOccupy(arrived = false) {
     return alert("You can only mark a reservation as arrived.");
   }
 
-  const guestDetails = gatherGuestDetails(entry);
+  const allowEmptyName = !entry;
+  const guestDetails = gatherGuestDetails(entry, allowEmptyName);
   if (!guestDetails) {
     return alert("Guest name is required to mark an umbrella as occupied.");
   }
@@ -503,22 +537,54 @@ async function handleOccupy(arrived = false) {
   };
 
   try {
-    if (!reservationsRef) throw new Error("Firestore not ready");
+    if (!reservationsRef || !db) throw new Error("Firestore not ready");
 
-    if (entry) {
-      await reservationsRef.doc(entry.id).update(payload);
-    } else {
-      await reservationsRef.add(payload);
-    }
+    await db.runTransaction(async (transaction) => {
+      const conflictSnapshot = await transaction.get(
+        reservationsRef
+          .where("date", "==", dateKey)
+          .where("umbrellaNumber", "==", selectedUmbrella)
+      );
+
+      const existingDoc = conflictSnapshot.docs.find((doc) => doc.id === entry?.id);
+      const conflictDoc = conflictSnapshot.docs.find(
+        (doc) => doc.id !== existingDoc?.id && isBusyStatus(doc.data().status)
+      );
+
+      if (conflictDoc) {
+        throw new Error("This umbrella is already reserved or occupied for that date.");
+      }
+
+      let targetRef = existingDoc
+        ? existingDoc.ref
+        : conflictSnapshot.docs.find((doc) => !isBusyStatus(doc.data().status))?.ref ||
+          reservationsRef.doc();
+
+      const currentStatus = existingDoc?.data().status;
+
+      if (arrived && currentStatus !== "reserved") {
+        throw new Error("A reservation must be in reserved status before marking arrival.");
+      }
+
+      if (!arrived && currentStatus === "occupied") {
+        throw new Error("Umbrella is already occupied.");
+      }
+
+      transaction.set(targetRef, payload);
+    });
 
     await audit(arrived ? "Arrived" : "Occupy", payload);
     renderAll();
   } catch (error) {
     console.error("Occupy error:", error);
-    alert(`Could not update occupancy: ${error?.message || "unknown error"}`);
+    alert(
+      error.message.includes("already")
+        ? "Umbrella already reserved or occupied. Refresh to see the latest availability."
+        : `Could not update occupancy: ${error?.message || "unknown error"}`
+    );
   }
-}
-
+}\r
+\r
 async function handleRelease() {
   if (!currentUser || !selectedUmbrella) return;
 
@@ -820,3 +886,36 @@ function init() {
 }
 
 waitForFirebase();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

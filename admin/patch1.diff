@@ -1,0 +1,69 @@
+﻿--- a/admin.js
++++ b/admin.js
+@@
+-function renderUmbrellas() {
+-  umbrellaRowsContainer.innerHTML = "";
+-  let umbrellaNumber = 1;
+-
+-  umbrellaRows.forEach((count) => {
+-    const row = document.createElement("div");
+-    row.className = "umbrella-row";
+-
+-    for (let i = 0; i < count; i += 1) {
+-      const box = document.createElement("div");
+-      box.className = "umbrella-box";
+-
+-      const entry = getEntry(selectedDate, umbrellaNumber);
+-      const visualStatus = !entry || entry.status === "released" ? "free" : entry.status;
+-
+-      box.classList.add(visualStatus);
+-      box.textContent = umbrellaNumber;
+-
+-      if (selectedUmbrella === umbrellaNumber) box.classList.add("active");
+-
+-      box.addEventListener("click", () => {
+-        selectedUmbrella = umbrellaNumber;
+-        renderAll();
+-      });
+-
+-      row.appendChild(box);
+-      umbrellaNumber += 1;
+-    }
+-
+-    umbrellaRowsContainer.appendChild(row);
+-  });
+-}
++function renderUmbrellas() {
++  umbrellaRowsContainer.innerHTML = "";
++  let umbrellaNumber = 1;
++
++  umbrellaRows.forEach((count) => {
++    const row = document.createElement("div");
++    row.className = "umbrella-row";
++
++    for (let i = 0; i < count; i += 1) {
++      const currentUmbrella = umbrellaNumber;
++      const box = document.createElement("div");
++      box.className = "umbrella-box";
++      box.dataset.number = currentUmbrella;
++
++      const entry = getEntry(selectedDate, currentUmbrella);
++      const visualStatus = !entry || entry.status === "released" ? "free" : entry.status;
++
++      box.classList.add(visualStatus);
++      box.textContent = currentUmbrella;
++
++      if (Number(selectedUmbrella) === currentUmbrella) box.classList.add("active");
++
++      box.addEventListener("click", (event) => {
++        selectedUmbrella = Number(event.currentTarget.dataset.number);
++        renderAll();
++      });
++
++      row.appendChild(box);
++      umbrellaNumber += 1;
++    }
++
++    umbrellaRowsContainer.appendChild(row);
++  });
++}
