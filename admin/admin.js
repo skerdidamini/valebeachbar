@@ -1,4 +1,4 @@
-ï»¿const PRICE_PER_UMBRELLA = 600;
+const PRICE_PER_UMBRELLA = 600;
 const umbrellaRows = [13, 13, 13, 13, 13, 13, 13, 9];
 const TOTAL_UMBRELLAS = umbrellaRows.reduce((sum, row) => sum + row, 0);
 
@@ -19,7 +19,7 @@ function waitForFirebase() {
     auditRef = db.collection("auditLogs");
     usersRef = db.collection("users");
 
-    console.log("Firebase loaded âœ…");
+    console.log("Firebase loaded ?");
     init();
   } else {
     console.log("Waiting for Firebase...");
@@ -275,7 +275,7 @@ function renderDetailPanel() {
     return;
   }
 
-  detailStatus.textContent = `${entry.status.toUpperCase()} Â· ${entry.guestName}`;
+  detailStatus.textContent = `${entry.status.toUpperCase()} · ${entry.guestName}`;
   detailStatus.classList.add(entry.status);
 
   const badge = getGuestBadge(entry.guestName);
@@ -358,7 +358,7 @@ function renderAuditLog() {
   auditEvents.slice(0, 8).forEach((event) => {
     const item = document.createElement("div");
     item.className = "audit-item";
-    item.textContent = `${event.action} Â· Umbrella ${event.umbrellaNumber} Â· ${event.userName} Â· ${event.timestamp}`;
+    item.textContent = `${event.action} · Umbrella ${event.umbrellaNumber} · ${event.userName} · ${event.timestamp}`;
     auditLogEl.appendChild(item);
   });
 
@@ -551,15 +551,16 @@ async function handleDelete() {
 
 async function handleLogin(event) {
   event.preventDefault();
+  event.stopPropagation();
 
   if (!auth) {
     showLoginMessage("Authentication is not available.");
-    return;
+    return false;
   }
 
   const formData = new FormData(loginForm);
-  const email = formData.get("email").trim();
-  const password = formData.get("password").trim();
+  const email = (formData.get("email") || "").trim();
+  const password = (formData.get("password") || "").trim();
 
   try {
     await auth.signInWithEmailAndPassword(email, password);
@@ -568,6 +569,8 @@ async function handleLogin(event) {
     console.error(error);
     showLoginMessage("Invalid credentials.");
   }
+
+  return false;
 }
 
 async function handleLogout() {
@@ -777,6 +780,8 @@ function init() {
   if (appInitialized) return;
   appInitialized = true;
 
+  loginForm.setAttribute("action", "javascript:void(0);");
+  loginForm.setAttribute("method", "post");
   loginForm.addEventListener("submit", handleLogin);
   logoutBtn.addEventListener("click", handleLogout);
   reserveForm.addEventListener("submit", handleReserve);
@@ -801,3 +806,9 @@ function init() {
 }
 
 waitForFirebase();
+
+
+
+
+
+
