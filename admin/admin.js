@@ -581,9 +581,9 @@ async function handleLogin(event) {
     await auth.signInWithEmailAndPassword(email, password);
     resetLoginMessage();
   } catch (error) {
-    console.error(error);
-    showLoginMessage("Invalid credentials.");
-  }
+  console.error("LOGIN ERROR:", error);
+  showLoginMessage(error?.message || "Invalid credentials.");
+}
 
   return false;
 }
