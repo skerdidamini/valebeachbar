@@ -35,11 +35,16 @@ let occupiedCountEl = null;
 let freeCountEl = null;
 let revenueTotalEl = null;
 let selectedUmbrellaLabel = null;
-let reserveForm = null;
-let markOccupiedBtn = null;
-let markArrivedBtn = null;
-let releaseUmbrellaBtn = null;
-let deleteEntryBtn = null;
+let modalReserveForm = null;
+let modalBackdrop = null;
+let modalUmbrellaNumber = null;
+let modalStatus = null;
+let modalDetailLog = null;
+let modalCloseBtn = null;
+let modalMarkOccupiedBtn = null;
+let modalMarkArrivedBtn = null;
+let modalReleaseUmbrellaBtn = null;
+let modalDeleteEntryBtn = null;
 let staffTotalsEl = null;
 let auditLogEl = null;
 let reportReservedEl = null;
@@ -70,11 +75,18 @@ function cacheDOMElements() {
   freeCountEl = document.getElementById("freeCount");
   revenueTotalEl = document.getElementById("revenueTotal");
   selectedUmbrellaLabel = document.getElementById("selectedUmbrellaLabel");
-  reserveForm = document.getElementById("reserveForm");
-  markOccupiedBtn = document.getElementById("markOccupiedBtn");
-  markArrivedBtn = document.getElementById("markArrivedBtn");
-  releaseUmbrellaBtn = document.getElementById("releaseUmbrellaBtn");
-  deleteEntryBtn = document.getElementById("deleteEntryBtn");
+
+  modalReserveForm = document.getElementById("modalReserveForm");
+  modalBackdrop = document.getElementById("umbrellaModalBackdrop");
+  modalUmbrellaNumber = document.getElementById("modalUmbrellaNumber");
+  modalStatus = document.getElementById("modalStatus");
+  modalDetailLog = document.getElementById("modalDetailLog");
+  modalCloseBtn = document.getElementById("modalCloseBtn");
+  modalMarkOccupiedBtn = document.getElementById("modalMarkOccupiedBtn");
+  modalMarkArrivedBtn = document.getElementById("modalMarkArrivedBtn");
+  modalReleaseUmbrellaBtn = document.getElementById("modalReleaseUmbrellaBtn");
+  modalDeleteEntryBtn = document.getElementById("modalDeleteEntryBtn");
+
   staffTotalsEl = document.getElementById("staffTotals");
   auditLogEl = document.getElementById("auditLog");
   reportReservedEl = document.getElementById("reportReserved");
@@ -180,10 +192,12 @@ function sumRevenue(entries) {
 }
 
 function gatherGuestDetails(existingEntry = null, allowEmptyName = false) {
-  if (!reserveForm) return null;
-  const formData = new FormData(reserveForm);
+  if (!modalReserveForm) return null;
+
+  const formData = new FormData(modalReserveForm);
   const rawName = existingEntry?.guestName || formData.get("guestName") || "";
   const guestName = rawName.trim();
+
   if (!guestName && !allowEmptyName) return null;
 
   const phone = existingEntry?.phone || (formData.get("phone") || "").trim();
@@ -244,6 +258,7 @@ function renderCalendar() {
     button.addEventListener("click", () => {
       selectedDate = date;
       selectedUmbrella = null;
+      closeModal();
       updateDisplayedDate();
       renderAll();
     });
@@ -285,9 +300,10 @@ function renderUmbrellas() {
 
       if (Number(selectedUmbrella) === currentUmbrella) box.classList.add("active");
 
-      box.addEventListener("click", (event) => {
-        selectedUmbrella = Number(event.currentTarget.dataset.number);
+      box.addEventListener("click", () => {
+        selectedUmbrella = currentUmbrella;
         renderAll();
+        openModal(getEntry(selectedDate, selectedUmbrella));
       });
 
       row.appendChild(box);
@@ -326,6 +342,7 @@ function renderDetailPanel() {
     ? `Umbrella ${selectedUmbrella}`
     : "Select an umbrella";
 }
+
 function renderStaffTotals() {
   if (!staffTotalsEl) return;
   const totals = {};
@@ -413,24 +430,33 @@ function renderUserList() {
 }
 
 function updateActions() {
-  if (!markArrivedBtn || !markOccupiedBtn || !releaseUmbrellaBtn || !deleteEntryBtn) return;
   const entry = selectedUmbrella ? getEntry(selectedDate, selectedUmbrella) : null;
   const activeEntry = entry && entry.status !== "released" ? entry : null;
 
   if (!currentUser) {
-    markArrivedBtn.disabled = true;
-    markOccupiedBtn.disabled = true;
-    releaseUmbrellaBtn.disabled = true;
-    deleteEntryBtn.disabled = true;
+    if (modalMarkArrivedBtn) modalMarkArrivedBtn.disabled = true;
+    if (modalMarkOccupiedBtn) modalMarkOccupiedBtn.disabled = true;
+    if (modalReleaseUmbrellaBtn) modalReleaseUmbrellaBtn.disabled = true;
+    if (modalDeleteEntryBtn) modalDeleteEntryBtn.disabled = true;
     return;
   }
 
-  markArrivedBtn.disabled =
-    !activeEntry || activeEntry.status !== "reserved" || !canEdit(activeEntry);
+  if (modalMarkArrivedBtn) {
+    modalMarkArrivedBtn.disabled =
+      !activeEntry || activeEntry.status !== "reserved" || !canEdit(activeEntry);
+  }
 
-  markOccupiedBtn.disabled = !!(activeEntry && activeEntry.status === "occupied");
-  releaseUmbrellaBtn.disabled = !activeEntry || !canEdit(activeEntry);
-  deleteEntryBtn.disabled = !activeEntry || !canEdit(activeEntry);
+  if (modalMarkOccupiedBtn) {
+    modalMarkOccupiedBtn.disabled = !!(activeEntry && activeEntry.status === "occupied");
+  }
+
+  if (modalReleaseUmbrellaBtn) {
+    modalReleaseUmbrellaBtn.disabled = !activeEntry || !canEdit(activeEntry);
+  }
+
+  if (modalDeleteEntryBtn) {
+    modalDeleteEntryBtn.disabled = !activeEntry || !canEdit(activeEntry);
+  }
 }
 
 function canEdit(entry) {
@@ -438,20 +464,62 @@ function canEdit(entry) {
   return currentUser.role === "admin" || entry.createdBy === currentUser.id;
 }
 
+function syncModalForm(entry) {
+  if (!modalReserveForm) return;
+
+  modalReserveForm.querySelector('[name="guestName"]').value = entry?.guestName || "";
+  modalReserveForm.querySelector('[name="phone"]').value = entry?.phone || "";
+  modalReserveForm.querySelector('[name="guestCount"]').value = entry?.guestCount || "";
+  modalReserveForm.querySelector('[name="notes"]').value = entry?.notes || "";
+}
+
+function openModal(entry) {
+  if (!modalBackdrop) return;
+
+  const effectiveStatus = !entry || entry.status === "released" ? "free" : entry.status;
+  const number = selectedUmbrella || entry?.umbrellaNumber || "—";
+
+  modalBackdrop.classList.remove("hidden");
+  modalUmbrellaNumber.textContent = number;
+  modalStatus.textContent = `Status: ${effectiveStatus}`;
+
+  modalDetailLog.innerHTML = entry && entry.status !== "released"
+    ? [
+        entry.guestName && `<div>Guest: ${entry.guestName}</div>`,
+        entry.phone && `<div>Phone: ${entry.phone}</div>`,
+        entry.guestCount && `<div>Guests: ${entry.guestCount}</div>`,
+        entry.notes && `<div>Notes: ${entry.notes}</div>`,
+      ]
+        .filter(Boolean)
+        .join("") || "<div>No extra details.</div>"
+    : "<div>No reservation yet.</div>";
+
+  syncModalForm(entry && entry.status !== "released" ? entry : null);
+  updateActions();
+}
+
+function closeModal() {
+  modalBackdrop?.classList.add("hidden");
+}
+
 async function handleReserve(event) {
   event.preventDefault();
-  if (!currentUser || !selectedUmbrella) return;
+  if (!currentUser || !selectedUmbrella) return false;
 
   const existing = getEntry(selectedDate, selectedUmbrella);
   const activeExisting = existing && existing.status !== "released" ? existing : null;
 
   if (activeExisting && !canEdit(activeExisting)) {
-    return alert("Only the creator or admin can edit this reservation.");
+    alert("Only the creator or admin can edit this reservation.");
+    return false;
   }
 
-  const formData = new FormData(reserveForm);
+  const formData = new FormData(modalReserveForm);
   const guestName = (formData.get("guestName") || "").trim();
-  if (!guestName) return alert("Guest name is required");
+  if (!guestName) {
+    alert("Guest name is required.");
+    return false;
+  }
 
   const dateKey = formatDateKey(selectedDate);
   const payload = {
@@ -471,7 +539,10 @@ async function handleReserve(event) {
   const docId = activeExisting?.id || `${dateKey}-${selectedUmbrella}`;
   const docRef = reservationsRef?.doc(docId);
 
-  if (!docRef) return alert("Reservations are not configured.");
+  if (!docRef) {
+    alert("Reservations are not configured.");
+    return false;
+  }
 
   try {
     if (!reservationsRef || !db) throw new Error("Firestore not ready");
@@ -492,7 +563,8 @@ async function handleReserve(event) {
     });
 
     await audit(activeExisting ? "Update reservation" : "Reserve", payload);
-    reserveForm?.reset();
+    syncModalForm(null);
+    return true;
   } catch (error) {
     console.error("Reserve error:", error);
     alert(
@@ -500,26 +572,34 @@ async function handleReserve(event) {
         ? "Umbrella already booked for that date. Refresh to see the latest availability."
         : `Could not save reservation: ${error?.message || "unknown error"}`
     );
+    return false;
   }
 }
+
 async function handleOccupy(arrived = false) {
-  if (!currentUser || !selectedUmbrella) return;
+  if (!currentUser || !selectedUmbrella) return false;
 
   const entry = getEntry(selectedDate, selectedUmbrella);
-  if (entry && entry.status === "occupied") return;
+  if (entry && entry.status === "occupied") {
+    alert("Umbrella is already occupied.");
+    return false;
+  }
 
   if (entry && entry.status === "reserved" && !canEdit(entry)) {
-    return alert("Only the creator or admin can update this reservation.");
+    alert("Only the creator or admin can update this reservation.");
+    return false;
   }
 
   if (arrived && (!entry || entry.status !== "reserved")) {
-    return alert("You can only mark a reservation as arrived.");
+    alert("You can only mark a reservation as arrived.");
+    return false;
   }
 
   const allowEmptyName = !entry;
   const guestDetails = gatherGuestDetails(entry, allowEmptyName);
   if (!guestDetails) {
-    return alert("Guest name is required to mark an umbrella as occupied.");
+    alert("Guest name is required to mark an umbrella as occupied.");
+    return false;
   }
 
   const dateKey = formatDateKey(selectedDate);
@@ -539,7 +619,10 @@ async function handleOccupy(arrived = false) {
   const docId = entry?.id || `${dateKey}-${selectedUmbrella}`;
   const docRef = reservationsRef?.doc(docId);
 
-  if (!docRef) return alert("Reservations are not configured.");
+  if (!docRef) {
+    alert("Reservations are not configured.");
+    return false;
+  }
 
   try {
     if (!reservationsRef || !db) throw new Error("Firestore not ready");
@@ -556,10 +639,16 @@ async function handleOccupy(arrived = false) {
         throw new Error("Umbrella is already occupied.");
       }
 
+      if (!arrived && currentStatus && isBusyStatus(currentStatus) && currentStatus !== "reserved") {
+        throw new Error("This umbrella is already reserved or occupied for that date.");
+      }
+
       transaction.set(docRef, payload);
     });
 
     await audit(arrived ? "Arrived" : "Occupy", payload);
+    syncModalForm(null);
+    return true;
   } catch (error) {
     console.error("Occupy error:", error);
     alert(
@@ -567,15 +656,22 @@ async function handleOccupy(arrived = false) {
         ? "Umbrella already reserved or occupied. Refresh to see the latest availability."
         : `Could not update occupancy: ${error?.message || "unknown error"}`
     );
+    return false;
   }
 }
 
 async function handleRelease() {
-  if (!currentUser || !selectedUmbrella) return;
+  if (!currentUser || !selectedUmbrella) return false;
 
   const entry = getEntry(selectedDate, selectedUmbrella);
-  if (!entry) return alert("No reservation to release.");
-  if (!canEdit(entry)) return alert("Only the creator or admin can release this umbrella.");
+  if (!entry) {
+    alert("No reservation to release.");
+    return false;
+  }
+  if (!canEdit(entry)) {
+    alert("Only the creator or admin can release this umbrella.");
+    return false;
+  }
 
   try {
     if (!reservationsRef) throw new Error("Firestore not ready");
@@ -588,19 +684,27 @@ async function handleRelease() {
 
     await audit("Release", { ...entry, status: "released" });
     selectedUmbrella = null;
-    renderAll();
+    syncModalForm(null);
+    return true;
   } catch (error) {
     console.error("Release error:", error);
     alert(`Could not release umbrella: ${error?.message || "unknown error"}`);
+    return false;
   }
 }
 
 async function handleDelete() {
-  if (!currentUser || !selectedUmbrella) return;
+  if (!currentUser || !selectedUmbrella) return false;
 
   const entry = getEntry(selectedDate, selectedUmbrella);
-  if (!entry) return alert("No reservation to delete.");
-  if (!canEdit(entry)) return alert("Only the creator or admin can delete this entry.");
+  if (!entry) {
+    alert("No reservation to delete.");
+    return false;
+  }
+  if (!canEdit(entry)) {
+    alert("Only the creator or admin can delete this entry.");
+    return false;
+  }
 
   try {
     if (!reservationsRef) throw new Error("Firestore not ready");
@@ -608,10 +712,12 @@ async function handleDelete() {
     await reservationsRef.doc(entry.id).delete();
     await audit("Delete", entry);
     selectedUmbrella = null;
-    renderAll();
+    syncModalForm(null);
+    return true;
   } catch (error) {
     console.error("Delete error:", error);
     alert(`Could not delete entry: ${error?.message || "unknown error"}`);
+    return false;
   }
 }
 
@@ -643,6 +749,7 @@ async function handleLogout() {
   if (!auth) return;
 
   stopRealtimeListeners();
+  closeModal();
 
   try {
     await auth.signOut();
@@ -719,6 +826,13 @@ function subscribeReservations() {
     .onSnapshot(
       (snapshot) => {
         reservations = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+        if (selectedUmbrella && !getEntry(selectedDate, selectedUmbrella) && !modalBackdrop?.classList.contains("hidden")) {
+          openModal(null);
+        } else if (selectedUmbrella && !modalBackdrop?.classList.contains("hidden")) {
+          openModal(getEntry(selectedDate, selectedUmbrella));
+        }
+
         renderAll();
       },
       (error) => handleRealtimeError("reservations", error)
@@ -797,6 +911,7 @@ function attachAuthListener() {
       if (sessionUser) sessionUser.textContent = "Not logged in";
       loginOverlay?.classList.remove("hidden");
       if (!loginNoticeOverride) resetLoginMessage();
+      closeModal();
       renderAll();
       return;
     }
@@ -832,6 +947,45 @@ function attachAuthListener() {
   });
 }
 
+function attachModalListeners() {
+  modalBackdrop?.addEventListener("click", (event) => {
+    if (event.target === modalBackdrop) closeModal();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modalBackdrop && !modalBackdrop.classList.contains("hidden")) {
+      closeModal();
+    }
+  });
+
+  modalCloseBtn?.addEventListener("click", closeModal);
+
+  modalReserveForm?.addEventListener("submit", async (event) => {
+    const success = await handleReserve(event);
+    if (success) closeModal();
+  });
+
+  modalMarkOccupiedBtn?.addEventListener("click", async () => {
+    const success = await handleOccupy(false);
+    if (success) closeModal();
+  });
+
+  modalMarkArrivedBtn?.addEventListener("click", async () => {
+    const success = await handleOccupy(true);
+    if (success) closeModal();
+  });
+
+  modalReleaseUmbrellaBtn?.addEventListener("click", async () => {
+    const success = await handleRelease();
+    if (success) closeModal();
+  });
+
+  modalDeleteEntryBtn?.addEventListener("click", async () => {
+    const success = await handleDelete();
+    if (success) closeModal();
+  });
+}
+
 function init() {
   if (appInitialized) return;
   appInitialized = true;
@@ -843,17 +997,16 @@ function init() {
   }
 
   logoutBtn?.addEventListener("click", handleLogout);
-  reserveForm?.addEventListener("submit", handleReserve);
-  markOccupiedBtn?.addEventListener("click", () => handleOccupy(false));
-  markArrivedBtn?.addEventListener("click", () => handleOccupy(true));
-  releaseUmbrellaBtn?.addEventListener("click", handleRelease);
-  deleteEntryBtn?.addEventListener("click", handleDelete);
+  attachModalListeners();
+
   todayBtn?.addEventListener("click", () => {
     selectedDate = new Date();
     selectedUmbrella = null;
+    closeModal();
     updateDisplayedDate();
     renderAll();
   });
+
   userForm?.addEventListener("submit", handleUserForm);
 
   if (sessionUser) sessionUser.textContent = "Not logged in";
@@ -868,17 +1021,3 @@ if (document.readyState === "loading") {
 } else {
   startApp();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
