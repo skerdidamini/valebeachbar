@@ -227,7 +227,10 @@ function renderUmbrellas() {
   box.className = "umbrella-box";
 
   const entry = getEntry(selectedDate, currentUmbrella);
-  box.classList.add(entry ? entry.status : "free");
+  const visualStatus =
+  !entry || entry.status === "released" ? "free" : entry.status;
+
+box.classList.add(visualStatus);
   box.textContent = currentUmbrella;
 
   if (selectedUmbrella === currentUmbrella) box.classList.add("active");
@@ -519,12 +522,12 @@ async function handleRelease() {
     if (!reservationsRef) throw new Error("Firestore not ready");
 
     await reservationsRef.doc(entry.id).update({
-      status: "free",
-      releasedAt: new Date().toISOString(),
-      releasedBy: currentUser.id,
-    });
+  status: "released",
+  releasedAt: new Date().toISOString(),
+  releasedBy: currentUser.id,
+});
 
-    await audit("Release", { ...entry, status: "free" });
+    await audit("Release", { ...entry, status: "released" });
     selectedUmbrella = null;
     renderAll();
   } catch (error) {
