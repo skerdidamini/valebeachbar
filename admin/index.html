@@ -12,7 +12,7 @@
         <div class="logo">Vale Admin</div>
         <div class="session">
           <span id="sessionUser">Not logged in</span>
-          <button id="logoutBtn" class="ghost-btn">Logout</button>
+          <button id="logoutBtn" class="ghost-btn" type="button">Logout</button>
         </div>
       </header>
 
@@ -21,10 +21,11 @@
           <div class="panel-head">
             <h2>Today Dashboard</h2>
             <div class="date-switch">
-              <button id="todayBtn">Today</button>
+              <button id="todayBtn" class="secondary" type="button">Today</button>
               <span id="displayedDate"></span>
             </div>
           </div>
+
           <div class="dashboard-grid">
             <div class="stat-card">
               <p class="label">Reserved</p>
@@ -68,36 +69,52 @@
             <h2>Umbrella detail & actions</h2>
             <span id="selectedUmbrellaLabel">Select an umbrella</span>
           </div>
+
           <div class="detail-content">
             <div class="detail-status" id="detailStatus"></div>
+
             <form id="reserveForm" class="action-form">
               <h4>Reserve</h4>
+
               <label>
                 Guest name *
                 <input type="text" name="guestName" required />
               </label>
+
               <label>
                 Phone
                 <input type="tel" name="phone" />
               </label>
+
               <label>
                 Guest count
                 <input type="number" name="guestCount" min="1" />
               </label>
+
               <label>
                 Notes
                 <textarea name="notes" rows="2"></textarea>
               </label>
+
               <button type="submit">Reserve umbrella</button>
             </form>
+
             <div class="action-row">
-              <button id="markOccupiedBtn">Mark occupied</button>
-              <button id="releaseUmbrellaBtn" class="ghost-btn">Release umbrella</button>
+              <button type="button" id="markOccupiedBtn">Mark occupied</button>
+              <button type="button" id="releaseUmbrellaBtn" class="ghost-btn">
+                Release umbrella
+              </button>
             </div>
+
             <div class="action-row">
-              <button id="markArrivedBtn" class="secondary">Mark arrived</button>
-              <button id="deleteEntryBtn" class="ghost-btn">Delete entry</button>
+              <button type="button" id="markArrivedBtn" class="secondary">
+                Mark arrived
+              </button>
+              <button type="button" id="deleteEntryBtn" class="ghost-btn">
+                Delete entry
+              </button>
             </div>
+
             <div class="detail-log" id="detailLog"></div>
           </div>
         </section>
@@ -144,23 +161,23 @@
           <div class="panel-head">
             <h2>Admin user management</h2>
           </div>
+
           <form id="userForm" class="action-form user-form">
             <label>
               Name
               <input type="text" name="name" required />
             </label>
-          <label>
-            Username
-            <input type="text" name="username" required />
-          </label>
-          <label>
-            Firebase UID
-            <input type="text" name="authUid" placeholder="Paste Auth UID" required />
-          </label>
-          <label>
-            Password
-            <input type="password" name="password" required />
+
+            <label>
+              Username
+              <input type="text" name="username" required />
             </label>
+
+            <label>
+              Firebase UID
+              <input type="text" name="authUid" placeholder="Paste Auth UID" required />
+            </label>
+
             <label>
               Role
               <select name="role">
@@ -168,8 +185,10 @@
                 <option value="admin">Admin</option>
               </select>
             </label>
+
             <button type="submit">Add user</button>
           </form>
+
           <div id="userList" class="list-grid"></div>
         </section>
       </main>
@@ -179,38 +198,41 @@
       <form class="login-form" id="loginForm" action="javascript:void(0);" method="post" novalidate>
         <h2>Vale Beach Admin Login</h2>
         <p class="login-hint" id="loginMessage">Enter your email to continue.</p>
+
         <label>
           Email
           <input type="email" name="email" placeholder="name@vale.beach" required />
         </label>
+
         <label>
           Password
           <input type="password" name="password" placeholder="••••••••" required />
         </label>
+
         <button type="submit">Enter admin area</button>
       </form>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCL0bCUl0dJFO2AZg17PMVb4jR8u_nSwn4",
-    authDomain: "vale-admin-a3c51.firebaseapp.com",
-    projectId: "vale-admin-a3c51",
-    storageBucket: "vale-admin-a3c51.firebasestorage.app",
-    messagingSenderId: "42562595285",
-    appId: "1:42562595285:web:6665e51bd4447d5f8a355c"
-  };
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyCL0bCUl0dJFO2AZg17PMVb4jR8u_nSwn4",
+        authDomain: "vale-admin-a3c51.firebaseapp.com",
+        projectId: "vale-admin-a3c51",
+        storageBucket: "vale-admin-a3c51.firebasestorage.app",
+        messagingSenderId: "42562595285",
+        appId: "1:42562595285:web:6665e51bd4447d5f8a355c"
+      };
 
-  firebase.initializeApp(firebaseConfig);
+      firebase.initializeApp(firebaseConfig);
 
-  window.firebaseAuth = firebase.auth();
-  window.firebaseDB = firebase.firestore();
-</script>
+      window.firebaseAuth = firebase.auth();
+      window.firebaseDB = firebase.firestore();
+    </script>
 
-<script src="admin.js"></script>
-</body>
+    <script src="admin.js"></script>
+  </body>
 </html>

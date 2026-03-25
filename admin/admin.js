@@ -19,7 +19,7 @@ function waitForFirebase() {
     auditRef = db.collection("auditLogs");
     usersRef = db.collection("users");
 
-    console.log("Firebase loaded ?");
+    console.log("Firebase loaded");
     init();
   } else {
     console.log("Waiting for Firebase...");
@@ -72,7 +72,10 @@ let listenersActive = false;
 let loginNoticeOverride = "";
 
 function formatDateKey(date) {
-  return date.toISOString().split("T")[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function getEntries(date) {
@@ -221,28 +224,26 @@ function renderUmbrellas() {
     row.className = "umbrella-row";
 
     for (let i = 0; i < count; i += 1) {
-  const currentUmbrella = umbrellaNumber;
+      const currentUmbrella = umbrellaNumber;
+      const box = document.createElement("div");
+      box.className = "umbrella-box";
 
-  const box = document.createElement("div");
-  box.className = "umbrella-box";
+      const entry = getEntry(selectedDate, currentUmbrella);
+      const visualStatus = !entry || entry.status === "released" ? "free" : entry.status;
 
-  const entry = getEntry(selectedDate, currentUmbrella);
-  const visualStatus =
-  !entry || entry.status === "released" ? "free" : entry.status;
+      box.classList.add(visualStatus);
+      box.textContent = currentUmbrella;
 
-box.classList.add(visualStatus);
-  box.textContent = currentUmbrella;
+      if (selectedUmbrella === currentUmbrella) box.classList.add("active");
 
-  if (selectedUmbrella === currentUmbrella) box.classList.add("active");
+      box.addEventListener("click", () => {
+        selectedUmbrella = currentUmbrella;
+        renderAll();
+      });
 
-  box.addEventListener("click", () => {
-    selectedUmbrella = currentUmbrella;
-    renderAll();
-  });
-
-  row.appendChild(box);
-  umbrellaNumber += 1;
-}
+      row.appendChild(box);
+      umbrellaNumber += 1;
+    }
 
     umbrellaRowsContainer.appendChild(row);
   });
@@ -273,10 +274,11 @@ function renderDetailPanel() {
   const entry = selectedUmbrella ? getEntry(selectedDate, selectedUmbrella) : null;
   detailStatus.className = "detail-status";
 
-  if (!entry) {
+  if (!entry || entry.status === "released") {
     detailStatus.textContent = "Free";
     detailStatus.classList.add("free");
     detailLog.textContent = "Select a free umbrella to reserve or occupy.";
+    reserveForm.reset();
     return;
   }
 
@@ -302,6 +304,12 @@ function renderDetailPanel() {
   }
 
   detailLog.innerHTML = history.map((line) => `<div>${line}</div>`).join("");
+
+  reserveForm.querySelector('[name="guestName"]').value = entry.guestName || "";
+  reserveForm.querySelector('[name="phone"]').value = entry.phone || "";
+  reserveForm.querySelector('[name="guestCount"]').value = entry.guestCount || "";
+  reserveForm.querySelector('[name="notes"]').value = entry.notes || "";
+
   pulseElement(detailStatus);
 }
 
@@ -388,6 +396,7 @@ function renderUserList() {
 
 function updateActions() {
   const entry = selectedUmbrella ? getEntry(selectedDate, selectedUmbrella) : null;
+  const activeEntry = entry && entry.status !== "released" ? entry : null;
 
   if (!currentUser) {
     markArrivedBtn.disabled = true;
@@ -397,10 +406,12 @@ function updateActions() {
     return;
   }
 
-  markArrivedBtn.disabled = !entry || entry.status !== "reserved" || !canEdit(entry);
-  markOccupiedBtn.disabled = !!(entry && entry.status === "occupied");
-  releaseUmbrellaBtn.disabled = !entry || !canEdit(entry);
-  deleteEntryBtn.disabled = !entry || !canEdit(entry);
+  markArrivedBtn.disabled =
+    !activeEntry || activeEntry.status !== "reserved" || !canEdit(activeEntry);
+
+  markOccupiedBtn.disabled = !!(activeEntry && activeEntry.status === "occupied");
+  releaseUmbrellaBtn.disabled = !activeEntry || !canEdit(activeEntry);
+  deleteEntryBtn.disabled = !activeEntry || !canEdit(activeEntry);
 }
 
 function canEdit(entry) {
@@ -413,52 +424,48 @@ async function handleReserve(event) {
   if (!currentUser || !selectedUmbrella) return;
 
   const existing = getEntry(selectedDate, selectedUmbrella);
+  const activeExisting = existing && existing.status !== "released" ? existing : null;
 
-  if (existing && existing.status !== "free") {
-    return alert("Umbrella is already booked for this day");
-  }
-
-  const reusingFreeRecord = existing && existing.status === "free";
-  if (existing && !reusingFreeRecord && !canEdit(existing)) {
-    return alert("Only the creator or admin can rebook this umbrella.");
+  if (activeExisting && !canEdit(activeExisting)) {
+    return alert("Only the creator or admin can edit this reservation.");
   }
 
   const formData = new FormData(reserveForm);
-  const guestName = formData.get("guestName").trim();
+  const guestName = (formData.get("guestName") || "").trim();
   if (!guestName) return alert("Guest name is required");
 
   const dateKey = formatDateKey(selectedDate);
-const payload = {
-  umbrellaNumber: selectedUmbrella,
-  status: "reserved",
-  guestName,
-  phone: formData.get("phone") || "",
-  guestCount: formData.get("guestCount") || "",
-  notes: formData.get("notes") || "",
-   createdByUid: currentUser.id,
-  amount: 0,
-    createdBy: reusingFreeRecord ? currentUser.id : existing?.createdBy || currentUser.id,
-    createdAt: reusingFreeRecord
-      ? new Date().toISOString()
-      : existing?.createdAt || new Date().toISOString(),
+  const payload = {
+    umbrellaNumber: selectedUmbrella,
+    status: "reserved",
+    guestName,
+    phone: (formData.get("phone") || "").trim(),
+    guestCount: (formData.get("guestCount") || "").trim(),
+    notes: (formData.get("notes") || "").trim(),
+    createdByUid: activeExisting?.createdByUid || activeExisting?.createdBy || currentUser.id,
+    amount: 0,
+    createdBy: activeExisting?.createdBy || currentUser.id,
+    createdAt: activeExisting?.createdAt || new Date().toISOString(),
     date: dateKey,
   };
 
   try {
     if (!reservationsRef) throw new Error("Firestore not ready");
 
-    if (existing) {
+    if (activeExisting) {
+      await reservationsRef.doc(activeExisting.id).update(payload);
+    } else if (existing && existing.status === "released") {
       await reservationsRef.doc(existing.id).update(payload);
     } else {
       await reservationsRef.add(payload);
     }
 
-    await audit("Reserve", payload);
+    await audit(activeExisting ? "Update reservation" : "Reserve", payload);
     reserveForm.reset();
     renderAll();
   } catch (error) {
-    console.error(error);
-    alert("Could not save reservation.");
+    console.error("Reserve error:", error);
+    alert(`Could not save reservation: ${error?.message || "unknown error"}`);
   }
 }
 
@@ -486,6 +493,7 @@ async function handleOccupy(arrived = false) {
     umbrellaNumber: selectedUmbrella,
     status: "occupied",
     ...guestDetails,
+    createdByUid: entry?.createdByUid || entry?.createdBy || currentUser.id,
     createdBy: entry?.createdBy || currentUser.id,
     createdAt: entry?.createdAt || new Date().toISOString(),
     occupiedBy: currentUser.id,
@@ -506,8 +514,8 @@ async function handleOccupy(arrived = false) {
     await audit(arrived ? "Arrived" : "Occupy", payload);
     renderAll();
   } catch (error) {
-    console.error(error);
-    alert("Could not update occupancy.");
+    console.error("Occupy error:", error);
+    alert(`Could not update occupancy: ${error?.message || "unknown error"}`);
   }
 }
 
@@ -522,17 +530,17 @@ async function handleRelease() {
     if (!reservationsRef) throw new Error("Firestore not ready");
 
     await reservationsRef.doc(entry.id).update({
-  status: "released",
-  releasedAt: new Date().toISOString(),
-  releasedBy: currentUser.id,
-});
+      status: "released",
+      releasedAt: new Date().toISOString(),
+      releasedBy: currentUser.id,
+    });
 
     await audit("Release", { ...entry, status: "released" });
     selectedUmbrella = null;
     renderAll();
   } catch (error) {
-    console.error(error);
-    alert("Could not release umbrella.");
+    console.error("Release error:", error);
+    alert(`Could not release umbrella: ${error?.message || "unknown error"}`);
   }
 }
 
@@ -551,8 +559,8 @@ async function handleDelete() {
     selectedUmbrella = null;
     renderAll();
   } catch (error) {
-    console.error(error);
-    alert("Could not delete entry.");
+    console.error("Delete error:", error);
+    alert(`Could not delete entry: ${error?.message || "unknown error"}`);
   }
 }
 
@@ -567,7 +575,7 @@ async function handleLogin(event) {
 
   const formData = new FormData(loginForm);
   const email = (formData.get("email") || "").trim();
-  const password = (formData.get("password") || "").trim();
+  
 
   try {
     await auth.signInWithEmailAndPassword(email, password);
@@ -599,13 +607,12 @@ async function handleUserForm(event) {
   if (!currentUser || currentUser.role !== "admin" || !usersRef) return;
 
   const formData = new FormData(userForm);
-  const name = formData.get("name").trim();
-  const username = formData.get("username").trim();
-  const password = formData.get("password").trim();
-  const authUid = formData.get("authUid").trim();
+  const name = (formData.get("name") || "").trim();
+  const username = (formData.get("username") || "").trim();
+  const authUid = (formData.get("authUid") || "").trim();
   const role = formData.get("role");
 
-  if (!name || !username || !password) return;
+if (!name || !username || !authUid) return;
 
   const duplicate = userDocs.find((user) => user.username === username);
   if (duplicate) return alert("Username taken");
@@ -631,7 +638,6 @@ async function handleUserForm(event) {
       createdAt: new Date().toISOString(),
     });
 
-    // Passwords must be handled only by Firebase Auth, not stored in Firestore.
     userForm.reset();
   } catch (error) {
     console.error(error);
@@ -813,9 +819,3 @@ function init() {
 }
 
 waitForFirebase();
-
-
-
-
-
-
