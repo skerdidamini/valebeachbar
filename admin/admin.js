@@ -275,7 +275,7 @@ function renderDetailPanel() {
     return;
   }
 
-  detailStatus.textContent = `${entry.status.toUpperCase()} · ${entry.guestName}`;
+  detailStatus.textContent = `${entry.status.toUpperCase()} Â· ${entry.guestName}`;
   detailStatus.classList.add(entry.status);
 
   const badge = getGuestBadge(entry.guestName);
@@ -358,7 +358,7 @@ function renderAuditLog() {
   auditEvents.slice(0, 8).forEach((event) => {
     const item = document.createElement("div");
     item.className = "audit-item";
-    item.textContent = `${event.action} · Umbrella ${event.umbrellaNumber} · ${event.userName} · ${event.timestamp}`;
+    item.textContent = `${event.action} Â· Umbrella ${event.umbrellaNumber} Â· ${event.userName} Â· ${event.timestamp}`;
     auditLogEl.appendChild(item);
   });
 
@@ -423,13 +423,15 @@ async function handleReserve(event) {
   if (!guestName) return alert("Guest name is required");
 
   const dateKey = formatDateKey(selectedDate);
-  const payload = {
-    umbrellaNumber: selectedUmbrella,
-    status: "reserved",
-    guestName,
-    phone: formData.get("phone") || "",
-    guestCount: formData.get("guestCount") || "",
-    notes: formData.get("notes") || "",
+const payload = {
+  umbrellaNumber: selectedUmbrella,
+  status: "reserved",
+  guestName,
+  phone: formData.get("phone") || "",
+  guestCount: formData.get("guestCount") || "",
+  notes: formData.get("notes") || "",
+   createdByUid: currentUser.id,
+  amount: 0,
     createdBy: reusingFreeRecord ? currentUser.id : existing?.createdBy || currentUser.id,
     createdAt: reusingFreeRecord
       ? new Date().toISOString()
