@@ -518,34 +518,27 @@ async function handleReserve(event) {
     date: dateKey,
   };
 
-  const targetDocId = activeExisting?.id || (existing?.status === "released" ? existing.id : null);
+  const docId = activeExisting?.id || `${dateKey}-${selectedUmbrella}`;
+  const docRef = reservationsRef?.doc(docId);
+
+  if (!docRef) return alert("Reservations are not configured.");
 
   try {
     if (!reservationsRef || !db) throw new Error("Firestore not ready");
 
     await db.runTransaction(async (transaction) => {
-      const conflictSnapshot = await transaction.get(
-        reservationsRef
-          .where("date", "==", dateKey)
-          .where("umbrellaNumber", "==", selectedUmbrella)
-      );
+      const snapshot = await transaction.get(docRef);
+      const currentStatus = snapshot.exists ? snapshot.data().status : null;
 
-      const conflictDoc = conflictSnapshot.docs.find(
-        (doc) => doc.id !== targetDocId && isBusyStatus(doc.data().status)
-      );
-
-      if (conflictDoc) {
+      if (
+        currentStatus &&
+        isBusyStatus(currentStatus) &&
+        (!activeExisting || snapshot.id !== activeExisting.id)
+      ) {
         throw new Error("This umbrella is already booked for that date.");
       }
 
-      let targetRef = targetDocId ? reservationsRef.doc(targetDocId) : null;
-
-      if (!targetRef) {
-        const reusable = conflictSnapshot.docs.find((doc) => !isBusyStatus(doc.data().status));
-        targetRef = reusable ? reusable.ref : reservationsRef.doc();
-      }
-
-      transaction.set(targetRef, payload);
+      transaction.set(docRef, payload);
     });
 
     await audit(activeExisting ? "Update reservation" : "Reserve", payload);
@@ -559,7 +552,6 @@ async function handleReserve(event) {
     );
   }
 }
-
 async function handleOccupy(arrived = false) {
   if (!currentUser || !selectedUmbrella) return;
 
@@ -594,31 +586,17 @@ async function handleOccupy(arrived = false) {
     date: dateKey,
   };
 
+  const docId = entry?.id || `${dateKey}-${selectedUmbrella}`;
+  const docRef = reservationsRef?.doc(docId);
+
+  if (!docRef) return alert("Reservations are not configured.");
+
   try {
     if (!reservationsRef || !db) throw new Error("Firestore not ready");
 
     await db.runTransaction(async (transaction) => {
-      const conflictSnapshot = await transaction.get(
-        reservationsRef
-          .where("date", "==", dateKey)
-          .where("umbrellaNumber", "==", selectedUmbrella)
-      );
-
-      const existingDoc = conflictSnapshot.docs.find((doc) => doc.id === entry?.id);
-      const conflictDoc = conflictSnapshot.docs.find(
-        (doc) => doc.id !== existingDoc?.id && isBusyStatus(doc.data().status)
-      );
-
-      if (conflictDoc) {
-        throw new Error("This umbrella is already reserved or occupied for that date.");
-      }
-
-      let targetRef = existingDoc
-        ? existingDoc.ref
-        : conflictSnapshot.docs.find((doc) => !isBusyStatus(doc.data().status))?.ref ||
-          reservationsRef.doc();
-
-      const currentStatus = existingDoc?.data().status;
+      const snapshot = await transaction.get(docRef);
+      const currentStatus = snapshot.exists ? snapshot.data().status : null;
 
       if (arrived && currentStatus !== "reserved") {
         throw new Error("A reservation must be in reserved status before marking arrival.");
@@ -628,7 +606,7 @@ async function handleOccupy(arrived = false) {
         throw new Error("Umbrella is already occupied.");
       }
 
-      transaction.set(targetRef, payload);
+      transaction.set(docRef, payload);
     });
 
     await audit(arrived ? "Arrived" : "Occupy", payload);
@@ -940,3 +918,6 @@ if (document.readyState === "loading") {
 } else {
   startApp();
 }
+
+
+
