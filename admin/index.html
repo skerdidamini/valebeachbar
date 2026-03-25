@@ -46,13 +46,32 @@
           </div>
 
           <div class="split-grid">
-            <div class="calendar-panel">
-              <div class="panel-head">
-                <h3>Calendar</h3>
-                <span id="calendarLegend">Green ≤70, Red ≥71</span>
-              </div>
-              <div class="calendar-grid" id="calendarGrid"></div>
-            </div>
+            <div class="calendar-panel compact-calendar-panel">
+  <div class="calendar-toolbar">
+    <div class="calendar-toolbar-left">
+      <h3>Calendar</h3>
+      <span id="calendarLegend">Green ≤70, Red ≥71</span>
+    </div>
+
+    <div class="calendar-nav">
+      <button type="button" id="prevMonthBtn" class="ghost-btn calendar-nav-btn">‹</button>
+      <span id="calendarMonthLabel" class="calendar-month-label">March 2026</span>
+      <button type="button" id="nextMonthBtn" class="ghost-btn calendar-nav-btn">›</button>
+    </div>
+  </div>
+
+  <div class="calendar-weekdays">
+    <span>Mon</span>
+    <span>Tue</span>
+    <span>Wed</span>
+    <span>Thu</span>
+    <span>Fri</span>
+    <span>Sat</span>
+    <span>Sun</span>
+  </div>
+
+  <div class="calendar-grid month-grid" id="calendarGrid"></div>
+</div>
 
             <div class="grid-panel">
               <div class="panel-head">

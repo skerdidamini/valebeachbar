@@ -623,7 +623,7 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
-  .calendar-grid {
+  .calendar-grid:not(.month-grid) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
@@ -655,7 +655,114 @@ button:disabled {
     padding-right: 2.2rem;
   }
 
-  .action-rows {
+.action-rows {
     grid-template-columns: 1fr;
+  }
+}
+
+.compact-calendar-panel {
+  align-self: start;
+}
+
+.calendar-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.calendar-toolbar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.calendar-toolbar-left h3 {
+  margin: 0;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calendar-nav-btn {
+  min-width: 40px;
+  padding: 0.45rem 0.7rem;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.calendar-month-label {
+  min-width: 140px;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.06rem;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-bottom: 0.45rem;
+}
+
+.calendar-weekdays span {
+  text-align: center;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12rem;
+  color: rgba(247, 242, 234, 0.55);
+  padding: 0.3rem 0;
+}
+
+.calendar-grid.month-grid {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.calendar-grid.month-grid button {
+  min-height: 48px;
+  padding: 0.45rem 0.2rem;
+  font-size: 0.9rem;
+  border-radius: 10px;
+}
+
+.calendar-grid.month-grid button.empty-day {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.calendar-grid.month-grid button.today-marker {
+  box-shadow: 0 0 0 2px rgba(242, 108, 79, 0.55);
+}
+
+@media (max-width: 900px) {
+  .calendar-toolbar {
+    align-items: stretch;
+  }
+
+  .calendar-nav {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .calendar-month-label {
+    flex: 1;
+  }
+}
+
+@media (max-width: 700px) {
+  .calendar-grid.month-grid button {
+    min-height: 42px;
+    font-size: 0.82rem;
+  }
+
+  .calendar-weekdays span {
+    font-size: 0.64rem;
+    letter-spacing: 0.08rem;
   }
 }

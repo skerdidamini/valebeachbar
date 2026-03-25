@@ -27,6 +27,9 @@ let loginOverlay = null;
 let loginForm = null;
 let logoutBtn = null;
 let todayBtn = null;
+let prevMonthBtn = null;
+let nextMonthBtn = null;
+let calendarMonthLabel = null;
 let displayedDate = null;
 let calendarGrid = null;
 let umbrellaRowsContainer = null;
@@ -65,10 +68,13 @@ function cacheDOMElements() {
 
   loginOverlay = document.getElementById("loginOverlay");
   loginForm = document.getElementById("loginForm");
-  logoutBtn = document.getElementById("logoutBtn");
-  todayBtn = document.getElementById("todayBtn");
-  displayedDate = document.getElementById("displayedDate");
-  calendarGrid = document.getElementById("calendarGrid");
+ logoutBtn = document.getElementById("logoutBtn");
+ todayBtn = document.getElementById("todayBtn");
+ prevMonthBtn = document.getElementById("prevMonthBtn");
+ nextMonthBtn = document.getElementById("nextMonthBtn");
+ calendarMonthLabel = document.getElementById("calendarMonthLabel");
+ displayedDate = document.getElementById("displayedDate");
+ calendarGrid = document.getElementById("calendarGrid");
   umbrellaRowsContainer = document.getElementById("umbrellaRows");
   reservedCountEl = document.getElementById("reservedCount");
   occupiedCountEl = document.getElementById("occupiedCount");
@@ -149,6 +155,12 @@ function updateDisplayedDate() {
   if (!displayedDate) return;
   const options = { weekday: "short", month: "short", day: "numeric", year: "numeric" };
   displayedDate.textContent = selectedDate.toLocaleDateString("en-GB", options);
+}
+
+function updateCalendarMonthLabel() {
+  if (!calendarMonthLabel) return;
+  const options = { month: "long", year: "numeric" };
+  calendarMonthLabel.textContent = selectedDate.toLocaleDateString("en-GB", options);
 }
 
 function showLoginMessage(text) {
@@ -241,20 +253,48 @@ async function audit(action, entry) {
 
 function renderCalendar() {
   if (!calendarGrid) return;
+
   calendarGrid.innerHTML = "";
+
   const year = selectedDate.getFullYear();
   const month = selectedDate.getMonth();
   const totalDays = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month, 1);
+
+  updateCalendarMonthLabel();
+
+  let startOffset = firstDay.getDay();
+  startOffset = startOffset === 0 ? 6 : startOffset - 1;
+
+  for (let i = 0; i < startOffset; i += 1) {
+    const emptyCell = document.createElement("button");
+    emptyCell.type = "button";
+    emptyCell.className = "empty-day";
+    emptyCell.disabled = true;
+    emptyCell.setAttribute("aria-hidden", "true");
+    calendarGrid.appendChild(emptyCell);
+  }
+
+  const todayKey = formatDateKey(new Date());
 
   for (let day = 1; day <= totalDays; day += 1) {
     const date = new Date(year, month, day);
     const key = formatDateKey(date);
     const button = document.createElement("button");
 
+    button.type = "button";
     button.className = getDayColorClass(key);
-    if (formatDateKey(selectedDate) === key) button.classList.add("active");
+
+    if (formatDateKey(selectedDate) === key) {
+      button.classList.add("active");
+    }
+
+    if (todayKey === key) {
+      button.classList.add("today-marker");
+    }
 
     button.textContent = day;
+
     button.addEventListener("click", () => {
       selectedDate = date;
       selectedUmbrella = null;
@@ -1007,6 +1047,29 @@ function init() {
     renderAll();
   });
 
+  prevMonthBtn?.addEventListener("click", () => {
+  selectedDate = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth() - 1,
+    1
+  );
+  selectedUmbrella = null;
+  closeModal();
+  updateDisplayedDate();
+  renderAll();
+});
+
+nextMonthBtn?.addEventListener("click", () => {
+  selectedDate = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth() + 1,
+    1
+  );
+  selectedUmbrella = null;
+  closeModal();
+  updateDisplayedDate();
+  renderAll();
+});
   userForm?.addEventListener("submit", handleUserForm);
 
   if (sessionUser) sessionUser.textContent = "Not logged in";
