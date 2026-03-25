@@ -575,18 +575,19 @@ async function handleLogin(event) {
 
   const formData = new FormData(loginForm);
   const email = (formData.get("email") || "").trim();
-  
+  const password = (formData.get("password") || "").trim();
 
   try {
     await auth.signInWithEmailAndPassword(email, password);
     resetLoginMessage();
   } catch (error) {
-  console.error("LOGIN ERROR:", error);
-  showLoginMessage(error?.message || "Invalid credentials.");
-}
+    console.error(error);
+    showLoginMessage("Invalid credentials.");
+  }
 
   return false;
 }
+
 
 async function handleLogout() {
   if (!auth) return;
