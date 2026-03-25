@@ -655,7 +655,7 @@ button:disabled {
     padding-right: 2.2rem;
   }
 
-.action-rows {
+  .action-rows {
     grid-template-columns: 1fr;
   }
 }
