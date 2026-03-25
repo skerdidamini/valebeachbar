@@ -203,6 +203,16 @@ function sumRevenue(entries) {
   return entries.reduce((total, entry) => total + (Number(entry.amount) || 0), 0);
 }
 
+function setFieldError(input, message) {
+  if (!input) return;
+  input.setCustomValidity(message || "");
+  if (message) {
+    input.reportValidity();
+    return;
+  }
+  input.setCustomValidity("");
+}
+
 function gatherGuestDetails(existingEntry = null, allowEmptyName = false) {
   if (!modalReserveForm) return null;
 
@@ -360,14 +370,28 @@ function isBusyStatus(status) {
 
 function renderStats() {
   if (!reservedCountEl || !occupiedCountEl || !freeCountEl || !revenueTotalEl) return;
+
   const entries = getEntries(selectedDate);
+
   const reserved = entries.filter((entry) => entry.status === "reserved").length;
   const occupied = entries.filter((entry) => entry.status === "occupied").length;
 
   reservedCountEl.textContent = reserved;
   occupiedCountEl.textContent = occupied;
   freeCountEl.textContent = TOTAL_UMBRELLAS - reserved - occupied;
-  const revenue = sumRevenue(entries);
+
+  let revenue = 0;
+
+  if (currentUser?.role === "admin") {
+    // admin sheh total
+    revenue = sumRevenue(entries);
+  } else {
+    // staff sheh vetëm të vetin
+    revenue = entries
+      .filter((entry) => entry.occupiedBy === currentUser.id)
+      .reduce((total, entry) => total + (Number(entry.amount) || 0), 0);
+  }
+
   revenueTotalEl.textContent = revenue;
 
   pulseElement(reservedCountEl);
@@ -398,7 +422,7 @@ function renderStaffTotals() {
     }
 
     totals[owner].occupied += 1;
-    totals[owner].revenue += PRICE_PER_UMBRELLA;
+    totals[owner].revenue += Number(entry.amount) || 0;
   });
 
   staffTotalsEl.innerHTML = "";
@@ -408,7 +432,12 @@ function renderStaffTotals() {
     displayUsers.push(currentUser);
   }
 
-  displayUsers.forEach((user) => {
+ displayUsers
+  .filter((user) => {
+    if (currentUser.role === "admin") return true;
+    return user.id === currentUser.id;
+  })
+  .forEach((user) => {
     const stats = totals[user.id] || { occupied: 0, revenue: 0 };
     const card = document.createElement("div");
 
@@ -556,16 +585,19 @@ async function handleReserve(event) {
 
   const formData = new FormData(modalReserveForm);
   const guestName = (formData.get("guestName") || "").trim();
+  const guestNameInput = modalReserveForm?.querySelector('[name="guestName"]');
   if (!guestName) {
-    alert("Guest name is required.");
+    setFieldError(guestNameInput, "Guest name is required for reservations.");
+    guestNameInput?.focus();
     return false;
   }
+  setFieldError(guestNameInput, "");
 
   const dateKey = formatDateKey(selectedDate);
   const payload = {
     umbrellaNumber: selectedUmbrella,
     status: "reserved",
-    guestName,
+    guestName: guestName || "",
     phone: (formData.get("phone") || "").trim(),
     guestCount: (formData.get("guestCount") || "").trim(),
     notes: (formData.get("notes") || "").trim(),
