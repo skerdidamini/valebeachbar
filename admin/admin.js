@@ -1,4 +1,4 @@
-const PRICE_PER_UMBRELLA = 600;
+ï»¿const PRICE_PER_UMBRELLA = 600;
 const umbrellaRows = [13, 13, 13, 13, 13, 13, 13, 9];
 const TOTAL_UMBRELLAS = umbrellaRows.reduce((sum, row) => sum + row, 0);
 
@@ -34,14 +34,12 @@ let reservedCountEl = null;
 let occupiedCountEl = null;
 let freeCountEl = null;
 let revenueTotalEl = null;
-let detailStatus = null;
 let selectedUmbrellaLabel = null;
 let reserveForm = null;
 let markOccupiedBtn = null;
 let markArrivedBtn = null;
 let releaseUmbrellaBtn = null;
 let deleteEntryBtn = null;
-let detailLog = null;
 let staffTotalsEl = null;
 let auditLogEl = null;
 let reportReservedEl = null;
@@ -71,14 +69,12 @@ function cacheDOMElements() {
   occupiedCountEl = document.getElementById("occupiedCount");
   freeCountEl = document.getElementById("freeCount");
   revenueTotalEl = document.getElementById("revenueTotal");
-  detailStatus = document.getElementById("detailStatus");
   selectedUmbrellaLabel = document.getElementById("selectedUmbrellaLabel");
   reserveForm = document.getElementById("reserveForm");
   markOccupiedBtn = document.getElementById("markOccupiedBtn");
   markArrivedBtn = document.getElementById("markArrivedBtn");
   releaseUmbrellaBtn = document.getElementById("releaseUmbrellaBtn");
   deleteEntryBtn = document.getElementById("deleteEntryBtn");
-  detailLog = document.getElementById("detailLog");
   staffTotalsEl = document.getElementById("staffTotals");
   auditLogEl = document.getElementById("auditLog");
   reportReservedEl = document.getElementById("reportReserved");
@@ -325,57 +321,11 @@ function renderStats() {
 }
 
 function renderDetailPanel() {
-  if (!detailStatus || !selectedUmbrellaLabel || !detailLog) return;
-  detailLog.innerHTML = "";
+  if (!selectedUmbrellaLabel) return;
   selectedUmbrellaLabel.textContent = selectedUmbrella
     ? `Umbrella ${selectedUmbrella}`
     : "Select an umbrella";
-
-  const entry = selectedUmbrella ? getEntry(selectedDate, selectedUmbrella) : null;
-  detailStatus.className = "detail-status";
-
-  if (!entry || entry.status === "released") {
-    detailStatus.textContent = "Free";
-    detailStatus.classList.add("free");
-    detailLog.textContent = "Select a free umbrella to reserve or occupy.";
-    reserveForm?.reset();
-    return;
-  }
-
-  const guestLabel = entry.guestName || "Walk-in";
-  detailStatus.textContent = `${entry.status.toUpperCase()} · ${guestLabel}`;
-  detailStatus.classList.add(entry.status);
-
-  const badge = getGuestBadge(entry.guestName);
-  const history = [];
-
-  if (badge) history.push(`<span class="guest-tag">${badge}</span>`);
-  if (entry.phone) history.push(`Phone: ${entry.phone}`);
-  if (entry.guestCount) history.push(`Guests: ${entry.guestCount}`);
-  if (entry.notes) history.push(`Notes: ${entry.notes}`);
-  if (entry.createdAt) {
-    history.push(
-      `Created by ${resolveName(entry.createdBy)} at ${new Date(entry.createdAt).toLocaleString()}`
-    );
-  }
-  if (entry.occupiedAt) {
-    history.push(
-      `Occupied by ${resolveName(entry.occupiedBy)} at ${new Date(entry.occupiedAt).toLocaleString()}`
-    );
-  }
-
-  detailLog.innerHTML = history.map((line) => `<div>${line}</div>`).join("");
-
-  if (reserveForm) {
-    reserveForm.querySelector('[name="guestName"]').value = entry.guestName || "";
-    reserveForm.querySelector('[name="phone"]').value = entry.phone || "";
-    reserveForm.querySelector('[name="guestCount"]').value = entry.guestCount || "";
-    reserveForm.querySelector('[name="notes"]').value = entry.notes || "";
-  }
-
-  pulseElement(detailStatus);
 }
-
 function renderStaffTotals() {
   if (!staffTotalsEl) return;
   const totals = {};
@@ -438,7 +388,7 @@ function renderAuditLog() {
   auditEvents.slice(0, 8).forEach((event) => {
     const item = document.createElement("div");
     item.className = "audit-item";
-    item.textContent = `${event.action} · Umbrella ${event.umbrellaNumber} · ${event.userName} · ${event.timestamp}`;
+    item.textContent = `${event.action} Â· Umbrella ${event.umbrellaNumber} Â· ${event.userName} Â· ${event.timestamp}`;
     auditLogEl.appendChild(item);
   });
 
@@ -918,6 +868,17 @@ if (document.readyState === "loading") {
 } else {
   startApp();
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
