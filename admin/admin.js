@@ -221,23 +221,25 @@ function renderUmbrellas() {
     row.className = "umbrella-row";
 
     for (let i = 0; i < count; i += 1) {
-      const box = document.createElement("div");
-      box.className = "umbrella-box";
+  const currentUmbrella = umbrellaNumber;
 
-      const entry = getEntry(selectedDate, umbrellaNumber);
-      box.classList.add(entry ? entry.status : "free");
-      box.textContent = umbrellaNumber;
+  const box = document.createElement("div");
+  box.className = "umbrella-box";
 
-      if (selectedUmbrella === umbrellaNumber) box.classList.add("active");
+  const entry = getEntry(selectedDate, currentUmbrella);
+  box.classList.add(entry ? entry.status : "free");
+  box.textContent = currentUmbrella;
 
-      box.addEventListener("click", () => {
-        selectedUmbrella = umbrellaNumber;
-        renderAll();
-      });
+  if (selectedUmbrella === currentUmbrella) box.classList.add("active");
 
-      row.appendChild(box);
-      umbrellaNumber += 1;
-    }
+  box.addEventListener("click", () => {
+    selectedUmbrella = currentUmbrella;
+    renderAll();
+  });
+
+  row.appendChild(box);
+  umbrellaNumber += 1;
+}
 
     umbrellaRowsContainer.appendChild(row);
   });
