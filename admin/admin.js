@@ -564,6 +564,8 @@ function openModal(entry) {
     : "<div>No reservation yet.</div>";
 
   syncModalForm(entry && entry.status !== "released" ? entry : null);
+  const guestNameInput = modalReserveForm?.querySelector('[name="guestName"]');
+  setFieldError(guestNameInput, "");
   updateActions();
 }
 
@@ -667,8 +669,9 @@ async function handleOccupy(arrived = false) {
     return false;
   }
 
-  const allowEmptyName = !entry;
-  const guestDetails = gatherGuestDetails(entry, allowEmptyName);
+  const wasReleased = entry?.status === "released";
+  const allowEmptyName = !entry || wasReleased;
+  const guestDetails = gatherGuestDetails(wasReleased ? null : entry, allowEmptyName);
   if (!guestDetails) {
     alert("Guest name is required to mark an umbrella as occupied.");
     return false;
@@ -744,6 +747,7 @@ async function handleRelease() {
     alert("Only the creator or admin can release this umbrella.");
     return false;
   }
+  const guestNameInput = modalReserveForm?.querySelector('[name="guestName"]');
 
   try {
     if (!reservationsRef) throw new Error("Firestore not ready");
@@ -757,6 +761,7 @@ async function handleRelease() {
     await audit("Release", { ...entry, status: "released" });
     selectedUmbrella = null;
     syncModalForm(null);
+    setFieldError(guestNameInput, "");
     return true;
   } catch (error) {
     console.error("Release error:", error);
