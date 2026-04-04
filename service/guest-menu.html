@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="sq">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vale Beach Bar | Call Waiter</title>
+    <link rel="stylesheet" href="guest-menu.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Space+Grotesk:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="guest-panel">
+      <div class="content">
+        <p class="eyebrow">Vale Beach Bar</p>
+        <h1>Umbrella <span id="umbrellaNumber">—</span></h1>
+        <p class="helper" id="helperText">
+          Scan the QR code at your umbrella to request a waiter.
+        </p>
+
+        <div class="messages" id="messageArea"></div>
+
+        <button class="primary-btn" id="callWaiterBtn" disabled>
+          Call Waiter
+        </button>
+      </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="guest-menu.js"></script>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="sq">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vale Beach Bar | Service Panel</title>
+    <link rel="stylesheet" href="service.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Space+Grotesk:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="service-app">
+      <header>
+        <p class="eyebrow">Vale Beach Bar</p>
+        <h1>Waiter Calls</h1>
+        <p class="subtext">Monitor and acknowledge newly requested umbrellas.</p>
+      </header>
+
+      <section class="calls" id="callsList">
+        <p class="placeholder">Loading active calls…</p>
+      </section>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="service.js"></script>
+  </body>
+</html>

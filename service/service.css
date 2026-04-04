@@ -1,0 +1,148 @@
+﻿*
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: "Space Grotesk", "Fraunces", system-ui, -apple-system, sans-serif;
+  color: #f5f1ec;
+  background-color: #050608;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #050608;
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.service-app {
+  width: min(900px, 100%);
+  background: rgba(10, 12, 16, 0.98);
+  border-radius: 32px;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65);
+}
+
+header .eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.35rem;
+  font-size: 0.75rem;
+  color: rgba(245, 241, 236, 0.5);
+  margin: 0 0 0.25rem;
+}
+
+header h1 {
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-size: clamp(2.3rem, 4vw, 3.2rem);
+}
+
+header .subtext {
+  margin-top: 0.5rem;
+  color: rgba(245, 241, 236, 0.7);
+  line-height: 1.6;
+}
+
+.calls {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-height: 160px;
+}
+
+.placeholder {
+  margin: 0;
+  color: rgba(245, 241, 236, 0.5);
+  font-size: 0.95rem;
+}
+
+.call-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.01);
+}
+
+.call-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.call-info strong {
+  font-size: 1.25rem;
+  letter-spacing: 0.08rem;
+}
+
+.call-info span {
+  font-size: 0.9rem;
+  color: rgba(245, 241, 236, 0.65);
+}
+
+.call-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.call-actions button {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
+  color: #f5f1ec;
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.call-actions button:hover {
+  border-color: rgba(242, 108, 79, 0.8);
+  background: rgba(242, 108, 79, 0.12);
+}
+
+.status-pill {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background: rgba(242, 108, 79, 0.15);
+  color: #f26c4f;
+}
+
+.status-seen {
+  background: rgba(255, 204, 0, 0.12);
+  color: #f5b71f;
+}
+
+.status-done {
+  background: rgba(110, 255, 126, 0.12);
+  color: #6cff7e;
+}
+
+@media (max-width: 600px) {
+  .call-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .call-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
