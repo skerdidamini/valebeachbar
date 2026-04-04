@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vale Beach Bar | Call Waiter</title>
+    <title>Vale Beach Bar | Call Waiter & Order</title>
     <link rel="stylesheet" href="guest-menu.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,23 +14,39 @@
   </head>
   <body>
     <main class="guest-panel">
-      <div class="content">
+      <section class="guest-header">
         <p class="eyebrow">Vale Beach Bar</p>
-        <h1>Umbrella <span id="umbrellaNumber">—</span></h1>
-        <p class="helper" id="helperText">
-          Scan the QR code at your umbrella to request a waiter.
-        </p>
-
+        <div class="umbrella-row">
+          <h1>
+            Umbrella <span id="umbrellaNumber">—</span>
+          </h1>
+          <p class="helper" id="helperText">Scan the QR code at your umbrella to request a waiter.</p>
+        </div>
+        <div class="action-row">
+          <button class="ghost-btn" id="callWaiterBtn" disabled>Call Waiter</button>
+          <button class="primary-btn" id="sendOrderBtn" disabled>Send Order</button>
+        </div>
         <div class="messages" id="messageArea"></div>
+      </section>
 
-        <button class="primary-btn" id="callWaiterBtn" disabled>
-          Call Waiter
-        </button>
-      </div>
+      <section class="menu-section">
+        <h2>Quick Menu</h2>
+        <div class="menu-grid" id="menuGrid"></div>
+      </section>
+
+      <section class="cart-panel">
+        <div class="cart-summary">
+          <h3>Cart</h3>
+          <p class="cart-total" id="cartTotal">Total: 0 LEK</p>
+          <div class="cart-items" id="cartItems">No items yet.</div>
+        </div>
+        <textarea id="orderNote" placeholder="Add a note (optional)"></textarea>
+      </section>
     </main>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="menu-data.js"></script>
     <script src="guest-menu.js"></script>
   </body>
 </html>

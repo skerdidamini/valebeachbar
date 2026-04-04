@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vale Beach Bar | Service Panel</title>
+    <title>Vale Beach Bar | Service</title>
     <link rel="stylesheet" href="service.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,12 +16,28 @@
     <div class="service-app">
       <header>
         <p class="eyebrow">Vale Beach Bar</p>
-        <h1>Waiter Calls</h1>
-        <p class="subtext">Monitor and acknowledge newly requested umbrellas.</p>
+        <h1>Waiter Calls & Orders</h1>
+        <p class="subtext">Monitor and process QR requests from the beach.</p>
       </header>
 
-      <section class="calls" id="callsList">
-        <p class="placeholder">Loading active calls…</p>
+      <section class="panel" aria-label="Waiter calls">
+        <div class="panel-heading">
+          <h2>Waiter Calls</h2>
+          <p>Pending and seen waiter requests.</p>
+        </div>
+        <div class="calls" id="callsList">
+          <p class="placeholder">Loading active calls…</p>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Incoming orders">
+        <div class="panel-heading">
+          <h2>Incoming Orders</h2>
+          <p>Newest active orders first.</p>
+        </div>
+        <div class="calls" id="ordersList">
+          <p class="placeholder">Loading orders…</p>
+        </div>
       </section>
     </div>
 

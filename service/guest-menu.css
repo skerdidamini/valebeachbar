@@ -1,6 +1,4 @@
-﻿*
-*::before,
-*::after {
+﻿*, *::before, *::after {
   box-sizing: border-box;
 }
 
@@ -15,81 +13,207 @@ body {
   min-height: 100vh;
   background: radial-gradient(circle at top, rgba(242, 108, 79, 0.25), transparent 45%),
     #07090f;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
 }
 
 .guest-panel {
-  width: 100%;
+  width: min(980px, 100%);
+  margin: 0 auto;
+  padding: 1.5rem clamp(1rem, 3vw, 2.5rem) 3rem;
   display: flex;
-  justify-content: center;
-  padding: 2rem 1rem 3rem;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.content {
-  width: min(480px, 100%);
+.guest-header {
   background: rgba(9, 9, 14, 0.92);
+  border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: clamp(1.5rem, 4vw, 2.5rem);
-  box-shadow: 0 30px 80px rgba(5, 5, 8, 0.75);
-  text-align: center;
+  padding: 1.5rem;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.65);
 }
 
 .eyebrow {
   text-transform: uppercase;
-  letter-spacing: 0.4rem;
+  letter-spacing: 0.35rem;
   font-size: 0.75rem;
-  color: rgba(245, 241, 236, 0.6);
-  margin-bottom: 0.2rem;
+  color: rgba(245, 241, 236, 0.55);
+  margin: 0;
 }
 
-.content h1 {
+.umbrella-row {
+  margin: 0.5rem 0 1rem;
+}
+
+.umbrella-row h1 {
   margin: 0;
   font-family: "Fraunces", serif;
-  font-size: clamp(2.5rem, 4vw, 3.25rem);
+  font-size: clamp(2.2rem, 3vw, 2.8rem);
 }
 
 .helper {
-  margin: 0.8rem 0 1.6rem;
-  color: rgba(245, 241, 236, 0.75);
-  line-height: 1.7;
+  margin: 0.5rem 0 0;
+  color: rgba(245, 241, 236, 0.7);
 }
 
-.primary-btn {
-  width: 100%;
-  border: none;
+.action-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.primary-btn,
+.ghost-btn {
+  flex: 1;
+  min-width: 160px;
   border-radius: 999px;
-  padding: 0.85rem 1rem;
-  background: linear-gradient(120deg, #f26c4f, #f2994a);
-  color: #0a0c10;
+  border: none;
+  padding: 0.8rem 1rem;
   font-weight: 600;
-  font-size: 1rem;
   cursor: pointer;
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
-.primary-btn:disabled {
-  opacity: 0.45;
+.primary-btn {
+  background: linear-gradient(120deg, #f26c4f, #f2994a);
+  color: #0a0c10;
+}
+
+.ghost-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #f5f1ec;
+}
+
+.primary-btn:disabled,
+.ghost-btn:disabled {
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
-.primary-btn:not(:disabled):hover {
+.action-row button:not(:disabled):hover {
   transform: translateY(-2px);
 }
 
-.messages {
-  min-height: 48px;
-  margin-bottom: 1.2rem;
-  font-size: 0.9rem;
-  letter-spacing: 0.02rem;
+.menu-section {
+  background: rgba(9, 9, 14, 0.95);
+  border-radius: 28px;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
 }
 
-.message-success {
+.menu-section h2 {
+  margin: 0 0 1rem;
+  font-family: "Fraunces", serif;
+  font-size: 1.6rem;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+}
+
+.menu-card {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.menu-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.05rem;
+}
+
+.menu-card span {
+  color: rgba(245, 241, 236, 0.7);
+  font-size: 0.9rem;
+}
+
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.qty-controls button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.qty-display {
+  min-width: 32px;
+  text-align: center;
+}
+
+.cart-panel {
+  background: rgba(9, 9, 14, 0.92);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.5rem;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cart-summary h3 {
+  margin: 0;
+}
+
+.cart-total {
+  margin: 0.35rem 0;
+  font-size: 1.1rem;
+}
+
+.cart-items {
+  min-height: 60px;
+  color: rgba(245, 241, 236, 0.7);
+  font-size: 0.95rem;
+}
+
+#orderNote {
+  width: 100%;
+  min-height: 92px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.02);
+  color: inherit;
+  padding: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.messages {
+  min-height: 26px;
+  font-size: 0.9rem;
+}
+
+.messages.message-success {
   color: #8cc76c;
 }
 
-.message-error {
+.messages.message-error {
   color: #f26c4f;
+}
+
+@media (max-width: 640px) {
+  .action-row {
+    flex-direction: column;
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
 }
