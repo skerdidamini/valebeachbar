@@ -375,17 +375,45 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById(tab.dataset.target)
   );
 
+  const headerElement = document.querySelector(".menu-header");
+  const getHeaderOffset = () => (headerElement?.offsetHeight || 0) + 12;
+
+  const easeInOutCubic = (t) =>
+    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  const smoothScrollToSection = (target, duration = 700) => {
+    const start = window.scrollY;
+    const targetRect = target.getBoundingClientRect();
+    const offset = getHeaderOffset();
+    const targetPosition = targetRect.top + window.scrollY - offset;
+    const distance = targetPosition - start;
+    if (distance === 0) return;
+    let startTime = null;
+
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = easeInOutCubic(progress);
+      window.scrollTo(0, start + distance * ease);
+      if (elapsed < duration) {
+        requestAnimationFrame(step);
+      }
+    };
+
+    requestAnimationFrame(step);
+  };
+
   tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       tabs.forEach((item) => item.classList.remove("active"));
       tab.classList.add("active");
       const target = document.getElementById(tab.dataset.target);
       if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        smoothScrollToSection(target);
       }
     });
   });
-
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -434,3 +462,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
