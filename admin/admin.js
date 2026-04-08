@@ -380,19 +380,32 @@ function renderStats() {
   occupiedCountEl.textContent = occupied;
   freeCountEl.textContent = TOTAL_UMBRELLAS - reserved - occupied;
 
-  let revenue = 0;
+  const revenueBreakdown = {};
+  entries.forEach((entry) => {
+    if (entry.status !== "occupied") return;
+    const actor = entry.occupiedBy || entry.createdBy;
+    if (!actor) return;
+    const amount = Number(entry.amount) || PRICE_PER_UMBRELLA;
+    revenueBreakdown[actor] = (revenueBreakdown[actor] || 0) + amount;
+  });
+
+  const totalRevenue = Object.values(revenueBreakdown).reduce((sum, value) => sum + value, 0);
 
   if (currentUser?.role === "admin") {
-    // admin sheh total
-    revenue = sumRevenue(entries);
+    const lines = Object.entries(revenueBreakdown).map(([ownerId, amount]) => {
+      const name = resolveName(ownerId);
+      return `${name} - ${amount} ALL`;
+    });
+    if (!lines.length) {
+      lines.push("No revenue yet");
+    } else {
+      lines.push(`Total - ${totalRevenue} ALL`);
+    }
+    revenueTotalEl.innerHTML = lines.map((line) => `<span>${line}</span>`).join("<br>");
   } else {
-    // staff sheh vetëm të vetin
-    revenue = entries
-      .filter((entry) => entry.occupiedBy === currentUser.id)
-      .reduce((total, entry) => total + (Number(entry.amount) || 0), 0);
+    const personal = revenueBreakdown[currentUser.id] || 0;
+    revenueTotalEl.textContent = `${personal} ALL`;
   }
-
-  revenueTotalEl.textContent = revenue;
 
   pulseElement(reservedCountEl);
   pulseElement(occupiedCountEl);
