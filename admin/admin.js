@@ -427,6 +427,11 @@ function renderDetailPanel() {
 
 function renderStaffTotals() {
   if (!staffTotalsEl) return;
+  if (!currentUser) {
+    staffTotalsEl.innerHTML = "";
+    return;
+  }
+
   const totals = {};
 
   reservations.forEach((entry) => {
