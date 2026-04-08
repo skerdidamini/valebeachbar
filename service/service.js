@@ -41,11 +41,11 @@ const createCallCard = (doc) => {
   const info = document.createElement("div");
   info.className = "call-info";
   const umbrella = document.createElement("strong");
-  umbrella.textContent = `Umbrella ${data.umbrella ?? "—"}`;
+  umbrella.textContent = "Umbrella " + (data.umbrella ?? "—");
   const time = document.createElement("span");
   time.textContent = formatTimestamp(data.createdAt);
   const badge = document.createElement("span");
-  badge.className = `status-pill status-${status}`;
+  badge.className = "status-pill status-" + status;
   badge.textContent = status;
   info.append(umbrella, time, badge);
 
@@ -76,18 +76,33 @@ const createCallCard = (doc) => {
   return card;
 };
 
-const renderCalls = (docs, container) => {
+const highlightNew = (element) => {
+  element.classList.add("is-new");
+  setTimeout(() => element.classList.remove("is-new"), 6500);
+};
+
+const newCallIds = new Set();
+const newOrderIds = new Set();
+let callsInitialized = false;
+let ordersInitialized = false;
+
+const renderCalls = (docs, container, newIds = new Set()) => {
   if (!docs.length) {
     container.innerHTML = '<p class="placeholder">No current requests.</p>';
     return;
   }
   container.innerHTML = "";
   docs.forEach((doc) => {
-    container.appendChild(createCallCard(doc));
+    const card = createCallCard(doc);
+    if (newIds.has(doc.id)) {
+      highlightNew(card);
+      newIds.delete(doc.id);
+    }
+    container.appendChild(card);
   });
 };
 
-const renderOrders = (docs) => {
+const renderOrders = (docs, newIds = new Set()) => {
   if (!docs.length) {
     ordersContainer.innerHTML = '<p class="placeholder">No active orders.</p>';
     return;
@@ -97,16 +112,16 @@ const renderOrders = (docs) => {
     const data = doc.data();
     const status = (data.status || "pending").toLowerCase();
     const card = document.createElement("article");
-    card.className = "call-card";
+    card.className = "call-card order-card";
 
     const info = document.createElement("div");
     info.className = "call-info";
     const umbrella = document.createElement("strong");
-    umbrella.textContent = `Umbrella ${data.umbrella ?? "—"}`;
+    umbrella.textContent = "Umbrella " + (data.umbrella ?? "—");
     const time = document.createElement("span");
     time.textContent = formatTimestamp(data.createdAt);
     const badge = document.createElement("span");
-    badge.className = `status-pill status-${status}`;
+    badge.className = "status-pill status-" + status;
     badge.textContent = status;
     info.append(umbrella, time, badge);
 
@@ -114,17 +129,19 @@ const renderOrders = (docs) => {
     itemsList.className = "order-items";
     (data.items || []).forEach((item) => {
       const line = document.createElement("span");
-      line.textContent = `${item.name} x${item.qty}`;
+      line.textContent = item.name + " x" + item.qty;
       itemsList.appendChild(line);
     });
 
     const note = document.createElement("p");
     note.className = "order-note";
-    note.textContent = data.note ? `Note: ${data.note}` : "";
+    if (data.note) {
+      note.textContent = "Note: " + data.note;
+    }
 
     const totalRow = document.createElement("p");
-    totalRow.className = "total-row";
-    totalRow.textContent = `Total: ${data.total || 0} LEK`;
+    totalRow.className = "total-row order-total";
+    totalRow.textContent = "Total: " + (data.total || 0) + " LEK";
 
     const actions = document.createElement("div");
     actions.className = "call-actions";
@@ -149,13 +166,30 @@ const renderOrders = (docs) => {
     });
     actions.append(seenBtn, doneBtn);
 
-    card.append(info, itemsList, note, totalRow, actions);
+    if (newIds.has(doc.id)) {
+      highlightNew(card);
+      newIds.delete(doc.id);
+    }
+
+    card.append(info, itemsList);
+    if (data.note) card.appendChild(note);
+    card.append(totalRow, actions);
     ordersContainer.appendChild(card);
   });
 };
 
 callsQuery.onSnapshot(
-  (snapshot) => renderCalls(snapshot.docs, callsContainer),
+  (snapshot) => {
+    if (callsInitialized) {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          newCallIds.add(change.doc.id);
+        }
+      });
+    }
+    renderCalls(snapshot.docs, callsContainer, newCallIds);
+    callsInitialized = true;
+  },
   (error) => {
     console.error("Realtime listener failed:", error);
     callsContainer.innerHTML = '<p class="placeholder">Unable to load calls.</p>';
@@ -163,7 +197,17 @@ callsQuery.onSnapshot(
 );
 
 ordersQuery.onSnapshot(
-  (snapshot) => renderOrders(snapshot.docs),
+  (snapshot) => {
+    if (ordersInitialized) {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          newOrderIds.add(change.doc.id);
+        }
+      });
+    }
+    renderOrders(snapshot.docs, newOrderIds);
+    ordersInitialized = true;
+  },
   (error) => {
     console.error("Realtime listener failed:", error);
     ordersContainer.innerHTML = '<p class="placeholder">Unable to load orders.</p>';
