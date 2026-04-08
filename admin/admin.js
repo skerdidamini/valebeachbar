@@ -586,8 +586,9 @@ async function handleReserve(event) {
   }
 
   const formData = new FormData(modalReserveForm);
-  const guestName = (formData.get("guestName") || "").trim();
   const guestNameInput = modalReserveForm?.querySelector('[name="guestName"]');
+  const guestNameSource = (guestNameInput?.value ?? formData.get("guestName") ?? "");
+  const guestName = guestNameSource.trim();
   if (!guestName) {
     setFieldError(guestNameInput, "Guest name is required for reservations.");
     guestNameInput?.focus();
