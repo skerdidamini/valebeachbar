@@ -391,7 +391,10 @@ function renderStats() {
 
   const totalRevenue = Object.values(revenueBreakdown).reduce((sum, value) => sum + value, 0);
 
-  if (currentUser?.role === "admin") {
+  const isAdmin = currentUser?.role === "admin";
+  const personalId = currentUser?.id;
+
+  if (isAdmin) {
     const lines = Object.entries(revenueBreakdown).map(([ownerId, amount]) => {
       const name = resolveName(ownerId);
       return `${name} - ${amount} ALL`;
@@ -402,9 +405,11 @@ function renderStats() {
       lines.push(`Total - ${totalRevenue} ALL`);
     }
     revenueTotalEl.innerHTML = lines.map((line) => `<span>${line}</span>`).join("<br>");
-  } else {
-    const personal = revenueBreakdown[currentUser.id] || 0;
+  } else if (personalId) {
+    const personal = revenueBreakdown[personalId] || 0;
     revenueTotalEl.textContent = `${personal} ALL`;
+  } else {
+    revenueTotalEl.textContent = `0 ALL`;
   }
 
   pulseElement(reservedCountEl);
