@@ -4,358 +4,74 @@
       "nav.home": "Kreu",
       "nav.location": "Vendndodhja",
       "nav.call": "Telefono",
-      "hero.menuTitle": "Menuja JonÃ«",
+      "hero.menuTitle": "Menuja Jonë",
       "hero.eyebrow": "Menu Vale Beach Bar",
-      "hero.heroCopy":
-        "Kafe, kokteje, pica, deti dhe shije tÃ« freskÃ«ta plazhi tÃ« dizajnuara pÃ«r ndriÃ§imin dhe qetÃ«sinÃ« e detit Adriatik.",
-      "footer.line": "Shfleto, skano dhe shijo ValÃ©.",
-
-      "tabs.tabCoffee": "Kafe & Freskuese",
-      "tabs.tabBeer": "Birra",
-      "tabs.tabCocktails": "Kokteje",
-      "tabs.tabSpirits": "Pije Alkoolike",
-      "tabs.tabWine": "VerÃ«",
-      "tabs.tabSalads": "SallatÃ« & ShoqÃ«ruese",
-      "tabs.tabSeafood": "Deti",
-      "tabs.tabChicken": "Pula",
-      "tabs.tabPizza": "Pizza",
-      "tabs.tabSandwiches": "SanduiÃ§e",
-      "tabs.tabBreakfast": "MÃ«ngjesi",
-
-      "items.itemCoffee": "Kafe",
-      "items.itemFreddoCoffee": "Kafe Fredo",
-      "items.itemIcedCocoa": "Kakao e FtohtÃ«",
-      "items.itemSmallCocoa": "Kakao e VogÃ«l",
-      "items.itemIcedCappuccino": "KapuÃ§hino e FtohtÃ«",
-      "items.itemCappuccino": "KapuÃ§hino Kafe",
-      "items.itemCappuccinoSachet": "KapuÃ§ino me BustinÃ«",
-      "items.itemMacchiato": "Makiato",
-      "items.itemDecaf": "Dekafeinato",
-      "items.itemFrappe": "Frape",
-      "items.itemMilkGlass": "GotÃ« QumÃ«sht",
-      "items.itemIcedChocolate": "Ã‡okollatÃ« e FtohtÃ«",
-      "items.itemB52": "B52",
-      "items.item1VI": "1VI",
-      "items.itemBravoJuices": "Bravo PjeshkÃ« / MollÃ« / Rrushi / Luleshtrydhe",
-      "items.itemAmitaJuices": "AmiTa Qershi / MollÃ« / Banane",
-      "items.itemCocaCola": "Coca Cola",
-      "items.itemCrodino": "Crodino",
-      "items.itemFanta": "Fanta Portokall / Exo",
-      "items.itemNescafeCan": "Nescafe Kanace",
-      "items.itemLemonOrangeSoda": "Lemon / Orange Soda",
-      "items.itemIceTea": "Ice Tea PjeshkÃ« / Limon",
-      "items.itemPepsi": "Pepsi",
-      "items.itemRedBull": "Red Bull",
-      "items.itemSprite": "Sprite",
-      "items.itemSchweppes": "Schweppes",
-      "items.itemWaterSparkling": "UjÃ« / UjÃ« i Gazuar",
-      "items.itemVitaminWater": "UjÃ« Vitamin Tepelena",
-
-      "items.itemCorona": "Corona",
-      "items.itemPeroni": "Peroni",
-      "items.itemHeineken": "Heineken",
-      "items.itemPaulaner": "Paulaner",
-      "items.itemKorca": "KorÃ§a",
-
-      "items.itemGinLemonTonic": "Gin Lemon / Tonic",
-      "items.itemJagerRedbull": "Jager Redbull",
-      "items.itemNegroni": "Negroni",
-      "items.itemNonAlcoholic": "Analkolik",
-      "items.itemVodkaLemon": "Vodka Lemon",
-      "items.itemVodkaRedbull": "Vodka Redbull",
-      "items.itemVodkaSour": "Vodka Sour",
-      "items.itemBasilSmash": "Basil Smash",
-      "items.itemWhiskeySour": "Whiskey Sour",
-      "items.itemGinSour": "Gin Sour",
-      "items.itemMojito": "Mojito",
-      "items.itemEspressoMartini": "Espresso Martini",
-      "items.itemAperolSpritz": "Aperol Spritz",
-      "items.itemMargarita": "Margarita",
-      "items.itemPinaColada": "Pina Colada",
-      "items.itemCubaLibre": "Cuba Libre",
-      "items.itemTequilaSunrise": "Tequila Sunrise",
-      "items.itemPassionFruitMojito": "Passion Fruit Mojito",
-      "items.itemSunsetAtVale": "Sunset at ValÃ©",
-      "items.itemSummerEcho": "Summer Echo",
-      "items.itemBlackWhiteRussian": "Black / White Russian",
-
-      "items.itemDictador12": "Dictador 12",
-      "items.itemDiplomatico": "Diplomatico",
-      "items.itemDisaronno": "Disaronno",
-      "items.itemGinMare": "Gin Mare",
-      "items.itemJackGentleman": "Jack Gentleman",
-      "items.itemJagermeister": "Jagermeister",
-      "items.itemMolinariSambuca": "Molinari Sambuca",
-      "items.itemUzo": "Uzo",
-      "items.itemVodkaBelvedere": "Vodka Belvedere",
-      "items.itemChivasRegal": "Chivas Regal",
-      "items.itemCourvoisier": "Courvoisier",
-      "items.itemFernetBranca": "Fernet Branca",
-      "items.itemJackDaniels": "Jack Daniels",
-      "items.itemGinHendricks": "Gin Hendricks",
-
-      "items.itemWineGlass": "GotÃ« VerÃ«",
-      "items.itemProseccoGlassBottle": "GotÃ« / Shishe Prosecco",
-      "items.itemChardonnay": "Chardonnay",
-      "items.itemPinotGrigio": "Pinot Grigio",
-      "items.itemGrecoDiTufo": "Greco di Tufo",
-      "items.itemGewurztraminer": "GewÃ¼rztraminer",
-
-      "items.itemGreekSalad": "SallatÃ« Greke",
-      "items.itemGreenSalad": "SallatÃ« Jeshile",
-      "items.itemOlivesLemon": "Ullinj, Limon",
-      "items.itemWatermelonCheeseMint": "Shalqi dhe DjathÃ« dhe Mente",
-      "items.itemWhiteCheese": "DjathÃ« i BardhÃ«",
-      "items.itemGrilledVegetables": "Perime Zgare",
-      "items.itemFrenchFries": "French Fries",
-
-      "items.itemGrilledSeaBream": "KoÃ§Ã« Zgare",
-      "items.itemGrilledSeaBass": "Levrek Zgare",
-      "items.itemSeafoodMixSmall": "Mix Deti Zgare (i vogÃ«l)",
-      "items.itemSeafoodMixLarge": "Mix Deti Zgare (i madh)",
-      "items.itemGrilledShrimp": "Karkalec Zgare",
-      "items.itemGrilledCalamari": "Kallamar Zgare",
-      "items.itemCrabMeatballs": "Qofte Gaforre",
-      "items.itemMarinatedAnchovies": "Acuge tÃ« Marinuara",
+      "hero.heroCopy": "Zgjedhjet e reja të Vale për kafe, kokteje, pizza, det dhe beach bites — të shërbyera thjesht, shpejt dhe me shije.",
+      "footer.line": "Shfleto, skano dhe shijo Vale.",
+      "tabs.kafeteria": "Kafeteria",
+      "tabs.freskuese": "Freskuese",
+      "tabs.birra": "Birra",
+      "tabs.cocktails": "Cocktails",
+      "tabs.spirits": "Pije Alkoolike",
+      "tabs.wine": "Verë",
+      "tabs.salads": "Sallatë & Shoqëruese",
+      "tabs.seafood": "Specialitete Deti",
+      "tabs.chicken": "Pulë & Grill",
+      "tabs.pizza": "Pizza",
+      "tabs.streetfood": "Street Food & Quick Bites",
+      "tabs.breakfast": "Mëngjesi",
+      "tabs.waffle": "Waffle",
+      "tabs.burger": "Burger",
+      "tabs.share": "Për të Gjithë Ne"
     },
-
     en: {
       "nav.home": "Home",
       "nav.location": "Location",
       "nav.call": "Call",
       "hero.menuTitle": "Our Menu",
       "hero.eyebrow": "Vale Beach Bar Menu",
-      "hero.heroCopy":
-        "Coffee, cocktails, pizza, seafood, and beachside bites crafted to match the light and calm of the Adriatic coast.",
-      "footer.line": "Explore, scan, and enjoy ValÃ©.",
-
-      "tabs.tabCoffee": "Coffee & Refreshments",
-      "tabs.tabBeer": "Beer",
-      "tabs.tabCocktails": "Cocktails",
-      "tabs.tabSpirits": "Spirits",
-      "tabs.tabWine": "Wine",
-      "tabs.tabSalads": "Salads & Sides",
-      "tabs.tabSeafood": "Seafood",
-      "tabs.tabChicken": "Chicken",
-      "tabs.tabPizza": "Pizza",
-      "tabs.tabSandwiches": "Sandwiches",
-      "tabs.tabBreakfast": "Breakfast",
-
-      "items.itemCoffee": "Coffee",
-      "items.itemFreddoCoffee": "Freddo Coffee",
-      "items.itemIcedCocoa": "Iced Cocoa",
-      "items.itemSmallCocoa": "Small Cocoa",
-      "items.itemIcedCappuccino": "Iced Cappuccino",
-      "items.itemCappuccino": "Cappuccino",
-      "items.itemCappuccinoSachet": "Cappuccino with Sachet",
-      "items.itemMacchiato": "Macchiato",
-      "items.itemDecaf": "Decaf Coffee",
-      "items.itemFrappe": "Frappe",
-      "items.itemMilkGlass": "Glass of Milk",
-      "items.itemIcedChocolate": "Iced Chocolate",
-      "items.itemB52": "B52",
-      "items.item1VI": "1VI",
-      "items.itemBravoJuices": "Bravo Peach / Apple / Grape / Strawberry",
-      "items.itemAmitaJuices": "AmiTa Cherry / Apple / Banana",
-      "items.itemCocaCola": "Coca Cola",
-      "items.itemCrodino": "Crodino",
-      "items.itemFanta": "Fanta Orange / Exotic",
-      "items.itemNescafeCan": "Nescafe Can",
-      "items.itemLemonOrangeSoda": "Lemon / Orange Soda",
-      "items.itemIceTea": "Iced Tea Peach / Lemon",
-      "items.itemPepsi": "Pepsi",
-      "items.itemRedBull": "Red Bull",
-      "items.itemSprite": "Sprite",
-      "items.itemSchweppes": "Schweppes",
-      "items.itemWaterSparkling": "Water / Sparkling Water",
-      "items.itemVitaminWater": "Vitamin Water Tepelena",
-
-      "items.itemCorona": "Corona",
-      "items.itemPeroni": "Peroni",
-      "items.itemHeineken": "Heineken",
-      "items.itemPaulaner": "Paulaner",
-      "items.itemKorca": "KorÃ§a Beer",
-
-      "items.itemGinLemonTonic": "Gin Lemon / Tonic",
-      "items.itemJagerRedbull": "Jager Red Bull",
-      "items.itemNegroni": "Negroni",
-      "items.itemNonAlcoholic": "Non-Alcoholic Cocktail",
-      "items.itemVodkaLemon": "Vodka Lemon",
-      "items.itemVodkaRedbull": "Vodka Red Bull",
-      "items.itemVodkaSour": "Vodka Sour",
-      "items.itemBasilSmash": "Basil Smash",
-      "items.itemWhiskeySour": "Whiskey Sour",
-      "items.itemGinSour": "Gin Sour",
-      "items.itemMojito": "Mojito",
-      "items.itemEspressoMartini": "Espresso Martini",
-      "items.itemAperolSpritz": "Aperol Spritz",
-      "items.itemMargarita": "Margarita",
-      "items.itemPinaColada": "Pina Colada",
-      "items.itemCubaLibre": "Cuba Libre",
-      "items.itemTequilaSunrise": "Tequila Sunrise",
-      "items.itemPassionFruitMojito": "Passion Fruit Mojito",
-      "items.itemSunsetAtVale": "Sunset at ValÃ©",
-      "items.itemSummerEcho": "Summer Echo",
-      "items.itemBlackWhiteRussian": "Black / White Russian",
-
-      "items.itemDictador12": "Dictador 12",
-      "items.itemDiplomatico": "Diplomatico",
-      "items.itemDisaronno": "Disaronno",
-      "items.itemGinMare": "Gin Mare",
-      "items.itemJackGentleman": "Jack Gentleman",
-      "items.itemJagermeister": "Jagermeister",
-      "items.itemMolinariSambuca": "Molinari Sambuca",
-      "items.itemUzo": "Ouzo",
-      "items.itemVodkaBelvedere": "Vodka Belvedere",
-      "items.itemChivasRegal": "Chivas Regal",
-      "items.itemCourvoisier": "Courvoisier",
-      "items.itemFernetBranca": "Fernet Branca",
-      "items.itemJackDaniels": "Jack Daniels",
-      "items.itemGinHendricks": "Gin Hendrick's",
-
-      "items.itemWineGlass": "Glass of Wine",
-      "items.itemProseccoGlassBottle": "Glass / Bottle of Prosecco",
-      "items.itemChardonnay": "Chardonnay",
-      "items.itemPinotGrigio": "Pinot Grigio",
-      "items.itemGrecoDiTufo": "Greco di Tufo",
-      "items.itemGewurztraminer": "GewÃ¼rztraminer",
-
-      "items.itemGreekSalad": "Greek Salad",
-      "items.itemGreenSalad": "Green Salad",
-      "items.itemOlivesLemon": "Olives, Lemon",
-      "items.itemWatermelonCheeseMint": "Watermelon, Cheese and Mint",
-      "items.itemWhiteCheese": "White Cheese",
-      "items.itemGrilledVegetables": "Grilled Vegetables",
-      "items.itemFrenchFries": "French Fries",
-
-      "items.itemGrilledSeaBream": "Grilled Sea Bream",
-      "items.itemGrilledSeaBass": "Grilled Sea Bass",
-      "items.itemSeafoodMixSmall": "Grilled Seafood Mix (small)",
-      "items.itemSeafoodMixLarge": "Grilled Seafood Mix (large)",
-      "items.itemGrilledShrimp": "Grilled Shrimp",
-      "items.itemGrilledCalamari": "Grilled Calamari",
-      "items.itemCrabMeatballs": "Crab Meatballs",
-      "items.itemMarinatedAnchovies": "Marinated Anchovies",
+      "hero.heroCopy": "Vale’s updated selection of coffee, cocktails, pizza, seafood, and beach bites — served simply, quickly, and with flavor.",
+      "footer.line": "Browse, scan, and enjoy Vale.",
+      "tabs.kafeteria": "Coffee Bar",
+      "tabs.freskuese": "Soft Drinks",
+      "tabs.birra": "Beer",
+      "tabs.cocktails": "Cocktails",
+      "tabs.spirits": "Spirits",
+      "tabs.wine": "Wine",
+      "tabs.salads": "Salads & Sides",
+      "tabs.seafood": "Seafood Specials",
+      "tabs.chicken": "Chicken & Grill",
+      "tabs.pizza": "Pizza",
+      "tabs.streetfood": "Street Food & Quick Bites",
+      "tabs.breakfast": "Breakfast",
+      "tabs.waffle": "Waffle",
+      "tabs.burger": "Burger",
+      "tabs.share": "For Sharing"
     },
-
     it: {
       "nav.home": "Home",
       "nav.location": "Posizione",
       "nav.call": "Chiama",
       "hero.menuTitle": "Il Nostro Menu",
       "hero.eyebrow": "Menu Vale Beach Bar",
-      "hero.heroCopy":
-        "CaffÃ¨, cocktail, pizza, frutti di mare e sapori da spiaggia pensati per accompagnare la luce e la calma della costa adriatica.",
-      "footer.line": "Scopri, scansiona e goditi ValÃ©.",
-
-      "tabs.tabCoffee": "CaffÃ¨ & Bevande Fresche",
-      "tabs.tabBeer": "Birra",
-      "tabs.tabCocktails": "Cocktail",
-      "tabs.tabSpirits": "Alcolici",
-      "tabs.tabWine": "Vino",
-      "tabs.tabSalads": "Insalate & Contorni",
-      "tabs.tabSeafood": "Mare",
-      "tabs.tabChicken": "Pollo",
-      "tabs.tabPizza": "Pizza",
-      "tabs.tabSandwiches": "Panini",
-      "tabs.tabBreakfast": "Colazione",
-
-      "items.itemCoffee": "CaffÃ¨",
-      "items.itemFreddoCoffee": "CaffÃ¨ Freddo",
-      "items.itemIcedCocoa": "Cacao Freddo",
-      "items.itemSmallCocoa": "Cacao Piccolo",
-      "items.itemIcedCappuccino": "Cappuccino Freddo",
-      "items.itemCappuccino": "Cappuccino",
-      "items.itemCappuccinoSachet": "Cappuccino con Bustina",
-      "items.itemMacchiato": "Macchiato",
-      "items.itemDecaf": "Decaffeinato",
-      "items.itemFrappe": "FrappÃ¨",
-      "items.itemMilkGlass": "Bicchiere di Latte",
-      "items.itemIcedChocolate": "Cioccolata Fredda",
-      "items.itemB52": "B52",
-      "items.item1VI": "1VI",
-      "items.itemBravoJuices": "Bravo Pesca / Mela / Uva / Fragola",
-      "items.itemAmitaJuices": "AmiTa Ciliegia / Mela / Banana",
-      "items.itemCocaCola": "Coca Cola",
-      "items.itemCrodino": "Crodino",
-      "items.itemFanta": "Fanta Arancia / Exotic",
-      "items.itemNescafeCan": "Nescafe in Lattina",
-      "items.itemLemonOrangeSoda": "Soda Limone / Arancia",
-      "items.itemIceTea": "TÃ¨ Freddo Pesca / Limone",
-      "items.itemPepsi": "Pepsi",
-      "items.itemRedBull": "Red Bull",
-      "items.itemSprite": "Sprite",
-      "items.itemSchweppes": "Schweppes",
-      "items.itemWaterSparkling": "Acqua / Acqua Frizzante",
-      "items.itemVitaminWater": "Acqua Vitaminica Tepelena",
-
-      "items.itemCorona": "Corona",
-      "items.itemPeroni": "Peroni",
-      "items.itemHeineken": "Heineken",
-      "items.itemPaulaner": "Paulaner",
-      "items.itemKorca": "Birra KorÃ§a",
-
-      "items.itemGinLemonTonic": "Gin Lemon / Tonic",
-      "items.itemJagerRedbull": "Jager Red Bull",
-      "items.itemNegroni": "Negroni",
-      "items.itemNonAlcoholic": "Cocktail Analcolico",
-      "items.itemVodkaLemon": "Vodka Lemon",
-      "items.itemVodkaRedbull": "Vodka Red Bull",
-      "items.itemVodkaSour": "Vodka Sour",
-      "items.itemBasilSmash": "Basil Smash",
-      "items.itemWhiskeySour": "Whiskey Sour",
-      "items.itemGinSour": "Gin Sour",
-      "items.itemMojito": "Mojito",
-      "items.itemEspressoMartini": "Espresso Martini",
-      "items.itemAperolSpritz": "Aperol Spritz",
-      "items.itemMargarita": "Margarita",
-      "items.itemPinaColada": "Pina Colada",
-      "items.itemCubaLibre": "Cuba Libre",
-      "items.itemTequilaSunrise": "Tequila Sunrise",
-      "items.itemPassionFruitMojito": "Mojito al Frutto della Passione",
-      "items.itemSunsetAtVale": "Sunset at ValÃ©",
-      "items.itemSummerEcho": "Summer Echo",
-      "items.itemBlackWhiteRussian": "Black / White Russian",
-
-      "items.itemDictador12": "Dictador 12",
-      "items.itemDiplomatico": "Diplomatico",
-      "items.itemDisaronno": "Disaronno",
-      "items.itemGinMare": "Gin Mare",
-      "items.itemJackGentleman": "Jack Gentleman",
-      "items.itemJagermeister": "Jagermeister",
-      "items.itemMolinariSambuca": "Molinari Sambuca",
-      "items.itemUzo": "Ouzo",
-      "items.itemVodkaBelvedere": "Vodka Belvedere",
-      "items.itemChivasRegal": "Chivas Regal",
-      "items.itemCourvoisier": "Courvoisier",
-      "items.itemFernetBranca": "Fernet Branca",
-      "items.itemJackDaniels": "Jack Daniels",
-      "items.itemGinHendricks": "Gin Hendrick's",
-
-      "items.itemWineGlass": "Calice di Vino",
-      "items.itemProseccoGlassBottle": "Calice / Bottiglia di Prosecco",
-      "items.itemChardonnay": "Chardonnay",
-      "items.itemPinotGrigio": "Pinot Grigio",
-      "items.itemGrecoDiTufo": "Greco di Tufo",
-      "items.itemGewurztraminer": "GewÃ¼rztraminer",
-
-      "items.itemGreekSalad": "Insalata Greca",
-      "items.itemGreenSalad": "Insalata Verde",
-      "items.itemOlivesLemon": "Olive, Limone",
-      "items.itemWatermelonCheeseMint": "Anguria, Formaggio e Menta",
-      "items.itemWhiteCheese": "Formaggio Bianco",
-      "items.itemGrilledVegetables": "Verdure alla Griglia",
-      "items.itemFrenchFries": "Patatine Fritte",
-
-      "items.itemGrilledSeaBream": "Orata alla Griglia",
-      "items.itemGrilledSeaBass": "Branzino alla Griglia",
-      "items.itemSeafoodMixSmall": "Grigliata Mista di Mare (piccola)",
-      "items.itemSeafoodMixLarge": "Grigliata Mista di Mare (grande)",
-      "items.itemGrilledShrimp": "Gamberi alla Griglia",
-      "items.itemGrilledCalamari": "Calamari alla Griglia",
-      "items.itemCrabMeatballs": "Polpette di Granchio",
-      "items.itemMarinatedAnchovies": "Alici Marinate",
-    },
+      "hero.heroCopy": "La selezione aggiornata di Vale con caffè, cocktail, pizza, mare e beach bites — servita in modo semplice, veloce e gustoso.",
+      "footer.line": "Sfoglia, scansiona e goditi Vale.",
+      "tabs.kafeteria": "Caffetteria",
+      "tabs.freskuese": "Bibite",
+      "tabs.birra": "Birra",
+      "tabs.cocktails": "Cocktail",
+      "tabs.spirits": "Alcolici",
+      "tabs.wine": "Vino",
+      "tabs.salads": "Insalate & Contorni",
+      "tabs.seafood": "Specialità di Mare",
+      "tabs.chicken": "Pollo & Grill",
+      "tabs.pizza": "Pizza",
+      "tabs.streetfood": "Street Food & Quick Bites",
+      "tabs.breakfast": "Colazione",
+      "tabs.waffle": "Waffle",
+      "tabs.burger": "Burger",
+      "tabs.share": "Per Tutti"
+    }
   };
 
   const DEFAULT_LANG = "sq";
@@ -371,15 +87,11 @@
   };
 
   const tabs = document.querySelectorAll(".category-tabs .tab");
-  const sections = Array.from(tabs).map((tab) =>
-    document.getElementById(tab.dataset.target)
-  );
-
+  const sections = Array.from(tabs).map((tab) => document.getElementById(tab.dataset.target));
   const headerElement = document.querySelector(".menu-header");
   const getHeaderOffset = () => (headerElement?.offsetHeight || 0) + 12;
 
-  const easeInOutCubic = (t) =>
-    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
   const smoothScrollToSection = (target, duration = 700) => {
     const start = window.scrollY;
@@ -396,9 +108,7 @@
       const progress = Math.min(elapsed / duration, 1);
       const ease = easeInOutCubic(progress);
       window.scrollTo(0, start + distance * ease);
-      if (elapsed < duration) {
-        requestAnimationFrame(step);
-      }
+      if (elapsed < duration) requestAnimationFrame(step);
     };
 
     requestAnimationFrame(step);
@@ -409,17 +119,14 @@
       tabs.forEach((item) => item.classList.remove("active"));
       tab.classList.add("active");
       const target = document.getElementById(tab.dataset.target);
-      if (target) {
-        smoothScrollToSection(target);
-      }
+      if (target) smoothScrollToSection(target);
     });
   });
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        const tab = Array.from(tabs).find(
-          (item) => item.dataset.target === entry.target.id
-        );
+        const tab = Array.from(tabs).find((item) => item.dataset.target === entry.target.id);
         if (entry.isIntersecting) {
           tabs.forEach((item) => item.classList.remove("active"));
           tab?.classList.add("active");
@@ -435,16 +142,11 @@
 
   const langButtons = document.querySelectorAll(".lang-btn");
   const storedLang = localStorage.getItem("valeMenuLanguage");
-  const langToUse =
-    storedLang && ["sq", "en", "it"].includes(storedLang)
-      ? storedLang
-      : DEFAULT_LANG;
+  const langToUse = storedLang && ["sq", "en", "it"].includes(storedLang) ? storedLang : DEFAULT_LANG;
 
   applyTranslations(langToUse);
 
-  const activeBtn = Array.from(langButtons).find(
-    (btn) => btn.dataset.lang === langToUse
-  );
+  const activeBtn = Array.from(langButtons).find((btn) => btn.dataset.lang === langToUse);
   if (activeBtn) {
     langButtons.forEach((btn) => btn.classList.remove("active"));
     activeBtn.classList.add("active");
@@ -462,5 +164,3 @@
     });
   });
 });
-
-

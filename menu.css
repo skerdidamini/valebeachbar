@@ -82,7 +82,9 @@ a {
   background: rgba(242, 108, 79, 0.1);
 }
 
-.menu-hero {\r\n  margin: 0.5rem 0 1rem;\r\n}
+.menu-hero {
+  margin: 0.5rem 0 1rem;
+}
 
 .menu-hero .eyebrow {
   text-transform: uppercase;
@@ -151,8 +153,8 @@ a {
   background: rgba(9, 9, 14, 0.8);
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 1.5rem;\r
-  scroll-margin-top: 110px;\r
+  padding: 1.5rem;
+  scroll-margin-top: 110px;
   box-shadow: 0 20px 60px rgba(5, 5, 8, 0.65);
 }
 
@@ -265,3 +267,18 @@ a {
 
 
 
+
+
+
+.menu-item span:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.menu-item small {
+  font-size: 0.78rem;
+  color: rgba(245, 241, 236, 0.62);
+  line-height: 1.35;
+  letter-spacing: 0.03rem;
+}
