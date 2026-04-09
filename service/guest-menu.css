@@ -123,7 +123,8 @@ body {
   cursor: not-allowed;
 }
 
-.action-row button:not(:disabled):hover {
+.action-row button:not(:disabled):hover,
+.cart-send-btn:not(:disabled):hover {
   transform: translateY(-2px);
 }
 
@@ -337,6 +338,13 @@ body {
   resize: vertical;
 }
 
+.cart-send-btn {
+  width: 100%;
+  margin-top: 0.15rem;
+  padding: 0.72rem 0.9rem;
+  min-width: 0;
+}
+
 .messages {
   min-height: 20px;
   font-size: 0.82rem;
@@ -356,23 +364,80 @@ body {
   box-shadow: 0 16px 30px rgba(242, 108, 79, 0.35);
 }
 
+.category-shortcuts {
+  margin-top: 0.65rem;
+}
+
+.shortcut-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: center;
+}
+
+.shortcut-chip {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #f5f1ec;
+  border-radius: 999px;
+  padding: 0.42rem 0.7rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.02rem;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.shortcut-chip:hover {
+  border-color: rgba(242, 108, 79, 0.72);
+  background: rgba(242, 108, 79, 0.12);
+}
+
+.shortcut-chip:active {
+  transform: scale(0.97);
+}
+
 @media (max-width: 720px) {
   .action-row {
     flex-direction: column;
   }
 
   .category-items {
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .menu-card {
-    padding: 0.75rem;
-    min-height: 108px;
+    padding: 0.68rem;
+    min-height: 96px;
+    gap: 0.42rem;
+  }
+
+  .menu-card h4 {
+    font-size: 0.92rem;
+  }
+
+  .menu-price {
+    font-size: 0.82rem;
+  }
+
+  .menu-note {
+    font-size: 0.72rem;
+    padding-left: 0.45rem;
+  }
+
+  .qty-controls {
+    gap: 0.35rem;
   }
 
   .qty-controls button {
-    width: 38px;
-    height: 38px;
+    width: 32px;
+    height: 32px;
+    font-size: 0.98rem;
+  }
+
+  .qty-value {
+    font-size: 0.9rem;
+    min-width: 24px;
   }
 }
 
@@ -424,40 +489,6 @@ body {
     font-size: 0.76rem;
   }
 
-  .category-shortcuts {
-  margin-top: 0.65rem;
-}
-
-.shortcut-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  justify-content: center;
-}
-
-.shortcut-chip {
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.05);
-  color: #f5f1ec;
-  border-radius: 999px;
-  padding: 0.42rem 0.7rem;
-  font-size: 0.74rem;
-  font-weight: 600;
-  letter-spacing: 0.02rem;
-  cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-}
-
-.shortcut-chip:hover {
-  border-color: rgba(242, 108, 79, 0.72);
-  background: rgba(242, 108, 79, 0.12);
-}
-
-.shortcut-chip:active {
-  transform: scale(0.97);
-}
-
-@media (max-width: 640px) {
   .shortcut-list {
     gap: 0.35rem;
   }
@@ -466,5 +497,9 @@ body {
     padding: 0.38rem 0.62rem;
     font-size: 0.7rem;
   }
-}
+
+  .cart-send-btn {
+    padding: 0.68rem 0.85rem;
+    font-size: 0.84rem;
+  }
 }
