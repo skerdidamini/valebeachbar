@@ -1,4 +1,4 @@
-﻿const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyBdP80zCTQr3DluoDhn5aQDKVTVqhBVKQU",
   authDomain: "vale-admin-a3c51.firebaseapp.com",
   projectId: "vale-admin-a3c51",
@@ -14,31 +14,111 @@ const ordersRef = db.collection("orders");
 
 const params = new URLSearchParams(window.location.search);
 const umbrellaParam = params.get("u");
+
 const umbrellaEl = document.getElementById("umbrellaNumber");
+const umbrellaLabelText = document.getElementById("umbrellaLabelText");
 const helperText = document.getElementById("helperText");
 const callBtn = document.getElementById("callWaiterBtn");
 const sendOrderBtn = document.getElementById("sendOrderBtn");
+const quickMenuTitle = document.getElementById("quickMenuTitle");
 const messageArea = document.getElementById("messageArea");
 const menuGrid = document.getElementById("menuGrid");
+const cartTitleEl = document.getElementById("cartTitle");
 const cartItemsEl = document.getElementById("cartItems");
 const cartTotalEl = document.getElementById("cartTotal");
 const orderNote = document.getElementById("orderNote");
+const categoryShortcutsEl = document.getElementById("categoryShortcuts");
 const langButtons = document.querySelectorAll(".lang-btn");
 
 const LANG_KEY = "valeMenuLanguage";
 const SUPPORTED_LANGS = ["sq", "en", "it"];
+
 if (!localStorage.getItem(LANG_KEY)) {
   localStorage.setItem(LANG_KEY, "sq");
 }
 
-const showMessage = (text, variant = "success") => {
-  messageArea.textContent = text;
-  messageArea.className = `messages message-${variant}`;
+const uiText = {
+  sq: {
+    umbrella: "Cadra",
+    callWaiter: "Thërrit Kamarierin",
+    sendOrder: "Dërgo Porosinë",
+    quickMenu: "Menu e Shpejtë",
+    cart: "Shporta",
+    total: "Totali",
+    noItems: "Asnjë produkt i zgjedhur",
+    notePlaceholder: "Shënime të veçanta (opsionale)",
+    itemCountSingle: "produkt",
+    itemCountPlural: "produkte",
+    msgWaitBeforeCall: "Ju lutem prisni pak para se ta thërrisni sërish kamarierin.",
+    msgSendingWaiter: "Po dërgohet kërkesa për kamarierin…",
+    msgWaiterRequested: (umbrellaNumber) => `Kamarieri u njoftua për cadrën ${umbrellaNumber}.`,
+    msgWaiterFailed: "Kërkesa nuk u dërgua dot. Provoni sërish pas pak.",
+    msgAddItemsFirst: "Ju lutem shtoni fillimisht produkte.",
+    msgWaitBeforeOrder: "Ju lutem prisni pak para se të dërgoni një porosi tjetër.",
+    msgSendingOrder: "Po dërgohet porosia…",
+    msgOrderSent: (umbrellaNumber) => `Porosia u dërgua për cadrën ${umbrellaNumber}.`,
+    msgOrderFailed: "Porosia nuk u dërgua dot. Provoni sërish pas pak.",
+    msgUmbrellaNotIdentified: "Cadra nuk u identifikua. Ju lutem skanoni përsëri kodin QR të cadrës suaj.",
+    msgUmbrellaMissing: "Mungon identifikimi i cadrës. Ju lutem skanoni përsëri kodin QR.",
+  },
+  en: {
+    umbrella: "Umbrella",
+    callWaiter: "Call Waiter",
+    sendOrder: "Send Order",
+    quickMenu: "Quick Menu",
+    cart: "Cart",
+    total: "Total",
+    noItems: "No items yet.",
+    notePlaceholder: "Add a note (optional)",
+    itemCountSingle: "item",
+    itemCountPlural: "items",
+    msgWaitBeforeCall: "Please wait before calling again.",
+    msgSendingWaiter: "Sending waiter request…",
+    msgWaiterRequested: (umbrellaNumber) => `Waiter requested for Umbrella ${umbrellaNumber}.`,
+    msgWaiterFailed: "Unable to send the request. Try again shortly.",
+    msgAddItemsFirst: "Please add items first.",
+    msgWaitBeforeOrder: "Please wait before sending another order.",
+    msgSendingOrder: "Sending order…",
+    msgOrderSent: (umbrellaNumber) => `Order sent for Umbrella ${umbrellaNumber}.`,
+    msgOrderFailed: "Unable to send the order. Try again soon.",
+    msgUmbrellaNotIdentified: "Umbrella not identified. Please scan the QR code on your umbrella again.",
+    msgUmbrellaMissing: "Umbrella missing. Scan the QR code again.",
+  },
+  it: {
+    umbrella: "Ombrellone",
+    callWaiter: "Chiama il Cameriere",
+    sendOrder: "Invia l'Ordine",
+    quickMenu: "Menu Rapido",
+    cart: "Carrello",
+    total: "Totale",
+    noItems: "Nessun prodotto selezionato",
+    notePlaceholder: "Note particolari (opzionale)",
+    itemCountSingle: "prodotto",
+    itemCountPlural: "prodotti",
+    msgWaitBeforeCall: "Attendi prima di richiamare di nuovo.",
+    msgSendingWaiter: "Invio della richiesta al cameriere…",
+    msgWaiterRequested: (umbrellaNumber) => `Cameriere richiesto per l'ombrellone ${umbrellaNumber}.`,
+    msgWaiterFailed: "Impossibile inviare la richiesta. Riprova tra poco.",
+    msgAddItemsFirst: "Aggiungi prima dei prodotti.",
+    msgWaitBeforeOrder: "Attendi prima di inviare un altro ordine.",
+    msgSendingOrder: "Invio dell'ordine…",
+    msgOrderSent: (umbrellaNumber) => `Ordine inviato per l'ombrellone ${umbrellaNumber}.`,
+    msgOrderFailed: "Impossibile inviare l'ordine. Riprova tra poco.",
+    msgUmbrellaNotIdentified: "Ombrellone non identificato. Scansiona di nuovo il codice QR del tuo ombrellone.",
+    msgUmbrellaMissing: "Manca l'identificazione dell'ombrellone. Scansiona di nuovo il codice QR.",
+  },
 };
 
 const getCurrentLanguage = () => {
   const stored = localStorage.getItem(LANG_KEY);
   return SUPPORTED_LANGS.includes(stored) ? stored : "sq";
+};
+
+const getUIText = () => uiText[getCurrentLanguage()] || uiText.sq;
+
+const showMessage = (text, variant = "success") => {
+  messageArea.textContent = text;
+  messageArea.className = `messages message-${variant}`;
 };
 
 const setLanguage = (lang) => {
@@ -61,9 +141,43 @@ const getLocalizedValue = (item, key, lang) => {
 const getLocalizedName = (item, lang) => getLocalizedValue(item, "name", lang);
 const getLocalizedCategory = (item, lang) => getLocalizedValue(item, "category", lang);
 const getLocalizedNote = (item, lang) => getLocalizedValue(item, "note", lang);
-const getLocalizedPriceLabel = (item, lang) => {
-  const label = item[`price_label_${lang}`];
-  return label ? label : `${item.price} LEK`;
+const getLocalizedPriceLabel = (item) => `${item.price} LEK`;
+
+const slugify = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const scrollToCategory = (categoryKey) => {
+  const target = document.getElementById(`category-${slugify(categoryKey)}`);
+  if (!target) return;
+
+  target.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+};
+
+const getMenuCategories = () => {
+  const lang = getCurrentLanguage();
+  const categories = [];
+
+  menuData.forEach((item) => {
+    if (!item.active) return;
+
+    const existing = categories.find((entry) => entry.key === item.category);
+    if (existing) return;
+
+    categories.push({
+      key: item.category,
+      label: getLocalizedCategory(item, lang) || item.category,
+    });
+  });
+
+  return categories;
 };
 
 const cart = {};
@@ -82,21 +196,28 @@ const calculateCart = () => {
         displayPriceLabel: getLocalizedPriceLabel(item, lang),
       };
     });
+
   const total = entries.reduce((sum, entry) => sum + entry.price * entry.qty, 0);
   return { entries, total };
 };
 
 const renderCart = () => {
   const { entries, total } = calculateCart();
-  cartTotalEl.textContent = `Total: ${total} LEK`;
+  const t = getUIText();
+
+  cartTotalEl.textContent = `${t.total}: ${total} LEK`;
+
   if (!entries.length) {
-    cartItemsEl.textContent = "No items yet.";
+    cartItemsEl.textContent = t.noItems;
     return;
   }
+
   const itemCount = entries.reduce((sum, entry) => sum + entry.qty, 0);
+  const itemLabel = itemCount === 1 ? t.itemCountSingle : t.itemCountPlural;
+
   cartItemsEl.innerHTML = `
     <div class="cart-summary-count">
-      ${itemCount} item${itemCount === 1 ? "" : "s"}
+      ${itemCount} ${itemLabel}
     </div>
     ${entries
       .map(
@@ -125,22 +246,26 @@ const updateQty = (itemId, delta) => {
 const buildMenu = () => {
   const lang = getCurrentLanguage();
   const categories = {};
+
   menuData.forEach((item) => {
     if (!item.active) return;
     const key = item.category;
+
     if (!categories[key]) {
       categories[key] = {
+        key,
         label: getLocalizedCategory(item, lang) || key,
         items: [],
       };
     }
+
     categories[key].items.push(item);
   });
 
   menuGrid.innerHTML = Object.values(categories)
     .map(
       (group) => `
-      <div class="category-block">
+      <div class="category-block" id="category-${slugify(group.key)}" data-category-key="${group.key}">
         <h3 class="category-label">${group.label}</h3>
         <div class="category-items">
           ${group.items
@@ -148,20 +273,21 @@ const buildMenu = () => {
               const localizedName = getLocalizedName(item, lang) || item.name;
               const localizedPrice = getLocalizedPriceLabel(item, lang);
               const localizedNote = getLocalizedNote(item, lang);
+
               return `
-            <div class="menu-card" data-item="${item.id}">
-              <div class="menu-card-header">
-                <h4>${localizedName}</h4>
-                <span class="menu-price">${localizedPrice}</span>
-              </div>
-              ${localizedNote ? `<p class="menu-note">${localizedNote}</p>` : ""}
-              <div class="qty-controls">
-                <button type="button" data-action="decrease" data-id="${item.id}">-</button>
-                <span class="qty-value">${cart[item.id] || 0}</span>
-                <button type="button" data-action="increase" data-id="${item.id}">+</button>
-              </div>
-            </div>
-          `;
+                <div class="menu-card" data-item="${item.id}">
+                  <div class="menu-card-header">
+                    <h4>${localizedName}</h4>
+                    <span class="menu-price">${localizedPrice}</span>
+                  </div>
+                  ${localizedNote ? `<p class="menu-note">${localizedNote}</p>` : ""}
+                  <div class="qty-controls">
+                    <button type="button" data-action="decrease" data-id="${item.id}">-</button>
+                    <span class="qty-value">${cart[item.id] || 0}</span>
+                    <button type="button" data-action="increase" data-id="${item.id}">+</button>
+                  </div>
+                </div>
+              `;
             })
             .join("")}
         </div>
@@ -171,21 +297,66 @@ const buildMenu = () => {
     .join("");
 };
 
+const renderCategoryShortcuts = () => {
+  if (!categoryShortcutsEl) return;
+
+  const categories = getMenuCategories();
+
+  if (!categories.length) {
+    categoryShortcutsEl.innerHTML = "";
+    return;
+  }
+
+  categoryShortcutsEl.innerHTML = `
+    <div class="shortcut-list">
+      ${categories
+        .map(
+          (category) => `
+            <button
+              type="button"
+              class="shortcut-chip"
+              data-category-target="${category.key}"
+            >
+              ${category.label}
+            </button>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+};
+
+const updateStaticLabels = () => {
+  const t = getUIText();
+
+  if (umbrellaLabelText) umbrellaLabelText.textContent = t.umbrella;
+  if (callBtn) callBtn.textContent = t.callWaiter;
+  if (sendOrderBtn) sendOrderBtn.textContent = t.sendOrder;
+  if (quickMenuTitle) quickMenuTitle.textContent = t.quickMenu;
+  if (cartTitleEl) cartTitleEl.textContent = t.cart;
+  if (orderNote) orderNote.placeholder = t.notePlaceholder;
+};
+
 const refreshMenuDisplay = () => {
   updateLanguageButtons();
+  updateStaticLabels();
   buildMenu();
   renderCart();
+  renderCategoryShortcuts();
 };
 
 menuGrid.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-action]");
   if (!button) return;
+
   const id = button.dataset.id;
   const card = button.closest(".menu-card");
+
   if (card) {
     card.classList.add("card-pulse");
     setTimeout(() => card.classList.remove("card-pulse"), 220);
   }
+
   if (button.dataset.action === "increase") {
     updateQty(id, 1);
   } else if (button.dataset.action === "decrease") {
@@ -193,13 +364,20 @@ menuGrid.addEventListener("click", (event) => {
   }
 });
 
+if (categoryShortcutsEl) {
+  categoryShortcutsEl.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-category-target]");
+    if (!button) return;
+
+    scrollToCategory(button.dataset.categoryTarget);
+  });
+}
+
 langButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     setLanguage(btn.dataset.lang);
   });
 });
-
-refreshMenuDisplay();
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
@@ -222,6 +400,8 @@ const tryOncePer = (key, duration = 15000) => {
   return true;
 };
 
+refreshMenuDisplay();
+
 if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
   const umbrellaNumber = Number(umbrellaParam);
   umbrellaEl.textContent = umbrellaNumber;
@@ -229,12 +409,16 @@ if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
   sendOrderBtn.disabled = false;
 
   callBtn.addEventListener("click", async () => {
+    const t = getUIText();
+
     if (!tryOncePer(`lastWaiter_${umbrellaNumber}`, 12000)) {
-      showMessage("Please wait before calling again.", "error");
+      showMessage(t.msgWaitBeforeCall, "error");
       return;
     }
+
     callBtn.disabled = true;
-    showMessage("Sending waiter request…");
+    showMessage(t.msgSendingWaiter);
+
     try {
       await waiterCalls.add({
         umbrella: umbrellaNumber,
@@ -242,10 +426,10 @@ if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         source: "qr",
       });
-      showMessage(`Waiter requested for Umbrella ${umbrellaNumber}.`);
+      showMessage(t.msgWaiterRequested(umbrellaNumber));
     } catch (error) {
       console.error(error);
-      showMessage("Unable to send the request. Try again shortly.", "error");
+      showMessage(t.msgWaiterFailed, "error");
     } finally {
       setTimeout(() => {
         callBtn.disabled = false;
@@ -254,17 +438,22 @@ if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
   });
 
   sendOrderBtn.addEventListener("click", async () => {
+    const t = getUIText();
     const { entries, total } = calculateCart();
+
     if (!entries.length) {
-      showMessage("Please add items first", "error");
+      showMessage(t.msgAddItemsFirst, "error");
       return;
     }
+
     if (!tryOncePer(`lastOrder_${umbrellaNumber}`, 12000)) {
-      showMessage("Please wait before sending another order.", "error");
+      showMessage(t.msgWaitBeforeOrder, "error");
       return;
     }
+
     sendOrderBtn.disabled = true;
-    showMessage("Sending order…");
+    showMessage(t.msgSendingOrder);
+
     try {
       const payloadItems = entries.map((entry) => ({
         id: entry.id,
@@ -273,6 +462,7 @@ if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
         price: entry.price,
         subtotal: entry.price * entry.qty,
       }));
+
       await ordersRef.add({
         umbrella: umbrellaNumber,
         items: payloadItems,
@@ -282,14 +472,21 @@ if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         source: "qr",
       });
-      Object.keys(cart).forEach((key) => (cart[key] = 0));
-      document.querySelectorAll(".qty-value").forEach((el) => (el.textContent = "0"));
+
+      Object.keys(cart).forEach((key) => {
+        cart[key] = 0;
+      });
+
+      document.querySelectorAll(".qty-value").forEach((el) => {
+        el.textContent = "0";
+      });
+
       orderNote.value = "";
       refreshMenuDisplay();
-      showMessage(`Order sent for Umbrella ${umbrellaNumber}.`);
+      showMessage(t.msgOrderSent(umbrellaNumber));
     } catch (error) {
       console.error(error);
-      showMessage("Unable to send the order. Try again soon.", "error");
+      showMessage(t.msgOrderFailed, "error");
     } finally {
       setTimeout(() => {
         sendOrderBtn.disabled = false;
@@ -297,8 +494,13 @@ if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
     }
   });
 } else {
+  const t = getUIText();
+
   umbrellaEl.textContent = "—";
-  helperText.textContent =
-    "Umbrella not identified. Please scan the QR code on your umbrella again.";
-  showMessage("Umbrella missing. Scan the QR code again.", "error");
+
+  if (helperText) {
+    helperText.textContent = t.msgUmbrellaNotIdentified;
+  }
+
+  showMessage(t.msgUmbrellaMissing, "error");
 }

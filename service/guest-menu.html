@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sq">
   <head>
     <meta charset="UTF-8" />
@@ -23,9 +23,9 @@
         </div>
         <div class="umbrella-row">
           <h1>
-            Umbrella <span id="umbrellaNumber">—</span>
+            <span id="umbrellaLabelText">Umbrella</span>
+            <span id="umbrellaNumber">—</span>
           </h1>
-          <p class="helper" id="helperText">Scan the QR code at your umbrella to request a waiter.</p>
         </div>
         <div class="action-row">
           <button class="ghost-btn" id="callWaiterBtn" disabled>Call Waiter</button>
@@ -35,18 +35,20 @@
       </section>
 
       <section class="menu-section">
-        <h2>Quick Menu</h2>
+        <h2 id="quickMenuTitle">Quick Menu</h2>
         <div class="menu-grid" id="menuGrid"></div>
       </section>
 
       <section class="cart-panel">
         <div class="cart-summary">
-          <h3>Cart</h3>
+          <h3 class="cart-title" id="cartTitle">Cart</h3>
           <p class="cart-total" id="cartTotal">Total: 0 LEK</p>
           <div class="cart-items" id="cartItems">No items yet.</div>
         </div>
         <textarea id="orderNote" placeholder="Add a note (optional)"></textarea>
       </section>
+
+      <section class="category-shortcuts" id="categoryShortcuts"></section>
     </main>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
