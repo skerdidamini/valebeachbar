@@ -502,4 +502,52 @@ body {
     padding: 0.68rem 0.85rem;
     font-size: 0.84rem;
   }
+
+  .menu-section-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 0.65rem;
+}
+
+.menu-section-top h2 {
+  margin-bottom: 0;
+}
+
+.menu-search {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f1ec;
+  padding: 0.68rem 0.8rem;
+  font-family: inherit;
+  font-size: 0.84rem;
+  outline: none;
+}
+
+.menu-search::placeholder {
+  color: rgba(245, 241, 236, 0.48);
+}
+
+.menu-search:focus {
+  border-color: rgba(242, 108, 79, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.menu-search-empty {
+  font-size: 0.8rem;
+  color: rgba(245, 241, 236, 0.68);
+  margin-bottom: 0.2rem;
+}
+
+@media (max-width: 640px) {
+  .menu-search {
+    padding: 0.62rem 0.74rem;
+    font-size: 0.8rem;
+  }
+
+  .menu-search-empty {
+    font-size: 0.76rem;
+  }
 }

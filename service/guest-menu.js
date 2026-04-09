@@ -23,6 +23,8 @@ const sendOrderBtn = document.getElementById("sendOrderBtn");
 const quickMenuTitle = document.getElementById("quickMenuTitle");
 const messageArea = document.getElementById("messageArea");
 const menuGrid = document.getElementById("menuGrid");
+const menuSearch = document.getElementById("menuSearch");
+const menuSearchEmpty = document.getElementById("menuSearchEmpty");
 const cartTitleEl = document.getElementById("cartTitle");
 const cartItemsEl = document.getElementById("cartItems");
 const cartTotalEl = document.getElementById("cartTotal");
@@ -43,29 +45,39 @@ const uiText = {
     callWaiter: "Thërrit Kamarierin",
     sendOrder: "Dërgo Porosinë",
     quickMenu: "Menu e Shpejtë",
+    searchPlaceholder: "Kërko produktin…",
+    searchEmpty: "Asnjë produkt i gjetur.",
     cart: "Shporta",
     total: "Totali",
     noItems: "Asnjë produkt i zgjedhur",
     notePlaceholder: "Shënime të veçanta (opsionale)",
     itemCountSingle: "produkt",
     itemCountPlural: "produkte",
-    msgWaitBeforeCall: "Ju lutem prisni pak para se ta thërrisni sërish kamarierin.",
+    msgWaitBeforeCall:
+      "Ju lutem prisni pak para se ta thërrisni sërish kamarierin.",
     msgSendingWaiter: "Po dërgohet kërkesa për kamarierin…",
-    msgWaiterRequested: (umbrellaNumber) => `Kamarieri u njoftua për cadrën ${umbrellaNumber}.`,
+    msgWaiterRequested: (umbrellaNumber) =>
+      `Kamarieri u njoftua për cadrën ${umbrellaNumber}.`,
     msgWaiterFailed: "Kërkesa nuk u dërgua dot. Provoni sërish pas pak.",
     msgAddItemsFirst: "Ju lutem shtoni fillimisht produkte.",
-    msgWaitBeforeOrder: "Ju lutem prisni pak para se të dërgoni një porosi tjetër.",
+    msgWaitBeforeOrder:
+      "Ju lutem prisni pak para se të dërgoni një porosi tjetër.",
     msgSendingOrder: "Po dërgohet porosia…",
-    msgOrderSent: (umbrellaNumber) => `Porosia u dërgua për cadrën ${umbrellaNumber}.`,
+    msgOrderSent: (umbrellaNumber) =>
+      `Porosia u dërgua për cadrën ${umbrellaNumber}.`,
     msgOrderFailed: "Porosia nuk u dërgua dot. Provoni sërish pas pak.",
-    msgUmbrellaNotIdentified: "Cadra nuk u identifikua. Ju lutem skanoni përsëri kodin QR të cadrës suaj.",
-    msgUmbrellaMissing: "Mungon identifikimi i cadrës. Ju lutem skanoni përsëri kodin QR.",
+    msgUmbrellaNotIdentified:
+      "Cadra nuk u identifikua. Ju lutem skanoni përsëri kodin QR të cadrës suaj.",
+    msgUmbrellaMissing:
+      "Mungon identifikimi i cadrës. Ju lutem skanoni përsëri kodin QR.",
   },
   en: {
     umbrella: "Umbrella",
     callWaiter: "Call Waiter",
     sendOrder: "Send Order",
     quickMenu: "Quick Menu",
+    searchPlaceholder: "Search menu…",
+    searchEmpty: "No matching products found.",
     cart: "Cart",
     total: "Total",
     noItems: "No items yet.",
@@ -74,14 +86,17 @@ const uiText = {
     itemCountPlural: "items",
     msgWaitBeforeCall: "Please wait before calling again.",
     msgSendingWaiter: "Sending waiter request…",
-    msgWaiterRequested: (umbrellaNumber) => `Waiter requested for Umbrella ${umbrellaNumber}.`,
+    msgWaiterRequested: (umbrellaNumber) =>
+      `Waiter requested for Umbrella ${umbrellaNumber}.`,
     msgWaiterFailed: "Unable to send the request. Try again shortly.",
     msgAddItemsFirst: "Please add items first.",
     msgWaitBeforeOrder: "Please wait before sending another order.",
     msgSendingOrder: "Sending order…",
-    msgOrderSent: (umbrellaNumber) => `Order sent for Umbrella ${umbrellaNumber}.`,
+    msgOrderSent: (umbrellaNumber) =>
+      `Order sent for Umbrella ${umbrellaNumber}.`,
     msgOrderFailed: "Unable to send the order. Try again soon.",
-    msgUmbrellaNotIdentified: "Umbrella not identified. Please scan the QR code on your umbrella again.",
+    msgUmbrellaNotIdentified:
+      "Umbrella not identified. Please scan the QR code on your umbrella again.",
     msgUmbrellaMissing: "Umbrella missing. Scan the QR code again.",
   },
   it: {
@@ -89,6 +104,8 @@ const uiText = {
     callWaiter: "Chiama il Cameriere",
     sendOrder: "Invia l'Ordine",
     quickMenu: "Menu Rapido",
+    searchPlaceholder: "Cerca nel menu…",
+    searchEmpty: "Nessun prodotto trovato.",
     cart: "Carrello",
     total: "Totale",
     noItems: "Nessun prodotto selezionato",
@@ -97,15 +114,19 @@ const uiText = {
     itemCountPlural: "prodotti",
     msgWaitBeforeCall: "Attendi prima di richiamare di nuovo.",
     msgSendingWaiter: "Invio della richiesta al cameriere…",
-    msgWaiterRequested: (umbrellaNumber) => `Cameriere richiesto per l'ombrellone ${umbrellaNumber}.`,
+    msgWaiterRequested: (umbrellaNumber) =>
+      `Cameriere richiesto per l'ombrellone ${umbrellaNumber}.`,
     msgWaiterFailed: "Impossibile inviare la richiesta. Riprova tra poco.",
     msgAddItemsFirst: "Aggiungi prima dei prodotti.",
     msgWaitBeforeOrder: "Attendi prima di inviare un altro ordine.",
     msgSendingOrder: "Invio dell'ordine…",
-    msgOrderSent: (umbrellaNumber) => `Ordine inviato per l'ombrellone ${umbrellaNumber}.`,
+    msgOrderSent: (umbrellaNumber) =>
+      `Ordine inviato per l'ombrellone ${umbrellaNumber}.`,
     msgOrderFailed: "Impossibile inviare l'ordine. Riprova tra poco.",
-    msgUmbrellaNotIdentified: "Ombrellone non identificato. Scansiona di nuovo il codice QR del tuo ombrellone.",
-    msgUmbrellaMissing: "Manca l'identificazione dell'ombrellone. Scansiona di nuovo il codice QR.",
+    msgUmbrellaNotIdentified:
+      "Ombrellone non identificato. Scansiona di nuovo il codice QR del tuo ombrellone.",
+    msgUmbrellaMissing:
+      "Manca l'identificazione dell'ombrellone. Scansiona di nuovo il codice QR.",
   },
 };
 
@@ -139,9 +160,13 @@ const getLocalizedValue = (item, key, lang) => {
 };
 
 const getLocalizedName = (item, lang) => getLocalizedValue(item, "name", lang);
-const getLocalizedCategory = (item, lang) => getLocalizedValue(item, "category", lang);
+const getLocalizedCategory = (item, lang) =>
+  getLocalizedValue(item, "category", lang);
 const getLocalizedNote = (item, lang) => getLocalizedValue(item, "note", lang);
 const getLocalizedPriceLabel = (item) => `${item.price} LEK`;
+
+const getSearchTerm = () =>
+  menuSearch ? menuSearch.value.trim().toLowerCase() : "";
 
 const slugify = (value) =>
   String(value || "")
@@ -245,16 +270,26 @@ const updateQty = (itemId, delta) => {
 
 const buildMenu = () => {
   const lang = getCurrentLanguage();
+  const searchTerm = getSearchTerm();
   const categories = {};
 
   menuData.forEach((item) => {
     if (!item.active) return;
+
+    const localizedName = getLocalizedName(item, lang) || item.name;
+    const localizedNote = getLocalizedNote(item, lang);
+    const localizedCategory = getLocalizedCategory(item, lang) || item.category;
+
+    const haystack =
+      `${localizedName} ${localizedNote} ${localizedCategory}`.toLowerCase();
+    if (searchTerm && !haystack.includes(searchTerm)) return;
+
     const key = item.category;
 
     if (!categories[key]) {
       categories[key] = {
         key,
-        label: getLocalizedCategory(item, lang) || key,
+        label: localizedCategory,
         items: [],
       };
     }
@@ -262,7 +297,15 @@ const buildMenu = () => {
     categories[key].items.push(item);
   });
 
-  menuGrid.innerHTML = Object.values(categories)
+  const groups = Object.values(categories);
+
+  if (menuSearchEmpty) {
+    const t = getUIText();
+    menuSearchEmpty.textContent = t.searchEmpty;
+    menuSearchEmpty.hidden = groups.length > 0;
+  }
+
+  menuGrid.innerHTML = groups
     .map(
       (group) => `
       <div class="category-block" id="category-${slugify(group.key)}" data-category-key="${group.key}">
@@ -301,8 +344,9 @@ const renderCategoryShortcuts = () => {
   if (!categoryShortcutsEl) return;
 
   const categories = getMenuCategories();
+  const searchTerm = getSearchTerm();
 
-  if (!categories.length) {
+  if (searchTerm || !categories.length) {
     categoryShortcutsEl.innerHTML = "";
     return;
   }
@@ -335,6 +379,8 @@ const updateStaticLabels = () => {
   if (quickMenuTitle) quickMenuTitle.textContent = t.quickMenu;
   if (cartTitleEl) cartTitleEl.textContent = t.cart;
   if (orderNote) orderNote.placeholder = t.notePlaceholder;
+  if (menuSearch) menuSearch.placeholder = t.searchPlaceholder;
+  if (menuSearchEmpty) menuSearchEmpty.textContent = t.searchEmpty;
 };
 
 const refreshMenuDisplay = () => {
@@ -370,6 +416,13 @@ if (categoryShortcutsEl) {
     if (!button) return;
 
     scrollToCategory(button.dataset.categoryTarget);
+  });
+}
+
+if (menuSearch) {
+  menuSearch.addEventListener("input", () => {
+    buildMenu();
+    renderCategoryShortcuts();
   });
 }
 
