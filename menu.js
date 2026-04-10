@@ -6,7 +6,7 @@
       "nav.call": "Telefono",
       "hero.menuTitle": "Menuja Jonë",
       "hero.eyebrow": "Menu Vale Beach Bar",
-      "hero.heroCopy": "Zgjedhjet e reja të Vale për kafe, kokteje, pizza, det dhe beach bites — të shërbyera thjesht, shpejt dhe me shije.",
+      "hero.heroCopy": "Zbulo menunë e Vale Beach Bar në Zvërnec, Vlorë — kafe, cocktails, pizza, specialitete deti, breakfast, waffle dhe beach bites të shërbyera shpejt dhe me shije.",
       "footer.line": "Shfleto, skano dhe shijo Vale.",
       "tabs.kafeteria": "Kafeteria",
       "tabs.freskuese": "Freskuese",
@@ -30,7 +30,7 @@
       "nav.call": "Call",
       "hero.menuTitle": "Our Menu",
       "hero.eyebrow": "Vale Beach Bar Menu",
-      "hero.heroCopy": "Vale’s updated selection of coffee, cocktails, pizza, seafood, and beach bites — served simply, quickly, and with flavor.",
+      "hero.heroCopy": "Explore the Vale Beach Bar menu in Zvernec, Vlore — coffee, cocktails, pizza, seafood, breakfast, waffles, and beach bites served quickly and with flavor.",
       "footer.line": "Browse, scan, and enjoy Vale.",
       "tabs.kafeteria": "Coffee Bar",
       "tabs.freskuese": "Soft Drinks",
@@ -54,7 +54,7 @@
       "nav.call": "Chiama",
       "hero.menuTitle": "Il Nostro Menu",
       "hero.eyebrow": "Menu Vale Beach Bar",
-      "hero.heroCopy": "La selezione aggiornata di Vale con caffè, cocktail, pizza, mare e beach bites — servita in modo semplice, veloce e gustoso.",
+      "hero.heroCopy": "Scopri il menu di Vale Beach Bar a Zvërnec, Valona — caffè, cocktail, pizza, specialità di mare, colazione, waffle e beach bites serviti in modo veloce e gustoso.",
       "footer.line": "Sfoglia, scansiona e goditi Vale.",
       "tabs.kafeteria": "Caffetteria",
       "tabs.freskuese": "Bibite",
@@ -91,7 +91,8 @@
   const headerElement = document.querySelector(".menu-header");
   const getHeaderOffset = () => (headerElement?.offsetHeight || 0) + 12;
 
-  const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const easeInOutCubic = (t) =>
+    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
   const smoothScrollToSection = (target, duration = 700) => {
     const start = window.scrollY;
@@ -142,7 +143,8 @@
 
   const langButtons = document.querySelectorAll(".lang-btn");
   const storedLang = localStorage.getItem("valeMenuLanguage");
-  const langToUse = storedLang && ["sq", "en", "it"].includes(storedLang) ? storedLang : DEFAULT_LANG;
+  const langToUse =
+    storedLang && ["sq", "en", "it"].includes(storedLang) ? storedLang : DEFAULT_LANG;
 
   applyTranslations(langToUse);
 
