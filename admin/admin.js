@@ -68,13 +68,13 @@ function cacheDOMElements() {
 
   loginOverlay = document.getElementById("loginOverlay");
   loginForm = document.getElementById("loginForm");
- logoutBtn = document.getElementById("logoutBtn");
- todayBtn = document.getElementById("todayBtn");
- prevMonthBtn = document.getElementById("prevMonthBtn");
- nextMonthBtn = document.getElementById("nextMonthBtn");
- calendarMonthLabel = document.getElementById("calendarMonthLabel");
- displayedDate = document.getElementById("displayedDate");
- calendarGrid = document.getElementById("calendarGrid");
+  logoutBtn = document.getElementById("logoutBtn");
+  todayBtn = document.getElementById("todayBtn");
+  prevMonthBtn = document.getElementById("prevMonthBtn");
+  nextMonthBtn = document.getElementById("nextMonthBtn");
+  calendarMonthLabel = document.getElementById("calendarMonthLabel");
+  displayedDate = document.getElementById("displayedDate");
+  calendarGrid = document.getElementById("calendarGrid");
   umbrellaRowsContainer = document.getElementById("umbrellaRows");
   reservedCountEl = document.getElementById("reservedCount");
   occupiedCountEl = document.getElementById("occupiedCount");
@@ -382,10 +382,12 @@ function renderStats() {
 
   const revenueBreakdown = {};
   entries.forEach((entry) => {
-    if (entry.status !== "occupied") return;
+    const amount = Number(entry.amount) || 0;
+    if (amount <= 0) return;
+
     const actor = entry.occupiedBy || entry.createdBy;
     if (!actor) return;
-    const amount = Number(entry.amount) || PRICE_PER_UMBRELLA;
+
     revenueBreakdown[actor] = (revenueBreakdown[actor] || 0) + amount;
   });
 
@@ -435,8 +437,6 @@ function renderStaffTotals() {
   const totals = {};
 
   reservations.forEach((entry) => {
-    if (entry.status !== "occupied") return;
-
     const owner = entry.occupiedBy || entry.createdBy;
     if (!owner) return;
 
@@ -444,8 +444,14 @@ function renderStaffTotals() {
       totals[owner] = { occupied: 0, revenue: 0 };
     }
 
-    totals[owner].occupied += 1;
-    totals[owner].revenue += Number(entry.amount) || 0;
+    if (entry.status === "occupied") {
+      totals[owner].occupied += 1;
+    }
+
+    const amount = Number(entry.amount) || 0;
+    if (amount > 0) {
+      totals[owner].revenue += amount;
+    }
   });
 
   staffTotalsEl.innerHTML = "";
@@ -455,19 +461,19 @@ function renderStaffTotals() {
     displayUsers.push(currentUser);
   }
 
- displayUsers
-  .filter((user) => {
-    if (currentUser.role === "admin") return true;
-    return user.id === currentUser.id;
-  })
-  .forEach((user) => {
-    const stats = totals[user.id] || { occupied: 0, revenue: 0 };
-    const card = document.createElement("div");
+  displayUsers
+    .filter((user) => {
+      if (currentUser.role === "admin") return true;
+      return user.id === currentUser.id;
+    })
+    .forEach((user) => {
+      const stats = totals[user.id] || { occupied: 0, revenue: 0 };
+      const card = document.createElement("div");
 
-    card.className = "list-card";
-    card.innerHTML = `<p>${user.name}</p><strong>Occupied: ${stats.occupied}</strong><small>Revenue: ${stats.revenue}</small>`;
-    staffTotalsEl.appendChild(card);
-  });
+      card.className = "list-card";
+      card.innerHTML = `<p>${user.name}</p><strong>Occupied: ${stats.occupied}</strong><small>Revenue: ${stats.revenue}</small>`;
+      staffTotalsEl.appendChild(card);
+    });
 }
 
 function renderReport() {
@@ -1109,28 +1115,29 @@ function init() {
   });
 
   prevMonthBtn?.addEventListener("click", () => {
-  selectedDate = new Date(
-    selectedDate.getFullYear(),
-    selectedDate.getMonth() - 1,
-    1
-  );
-  selectedUmbrella = null;
-  closeModal();
-  updateDisplayedDate();
-  renderAll();
-});
+    selectedDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth() - 1,
+      1
+    );
+    selectedUmbrella = null;
+    closeModal();
+    updateDisplayedDate();
+    renderAll();
+  });
 
-nextMonthBtn?.addEventListener("click", () => {
-  selectedDate = new Date(
-    selectedDate.getFullYear(),
-    selectedDate.getMonth() + 1,
-    1
-  );
-  selectedUmbrella = null;
-  closeModal();
-  updateDisplayedDate();
-  renderAll();
-});
+  nextMonthBtn?.addEventListener("click", () => {
+    selectedDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth() + 1,
+      1
+    );
+    selectedUmbrella = null;
+    closeModal();
+    updateDisplayedDate();
+    renderAll();
+  });
+
   userForm?.addEventListener("submit", handleUserForm);
 
   if (sessionUser) sessionUser.textContent = "Not logged in";
