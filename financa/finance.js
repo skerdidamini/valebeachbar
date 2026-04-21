@@ -18,6 +18,12 @@
     cardNetToday: document.getElementById("cardNetToday"),
     cardEntriesToday: document.getElementById("cardEntriesToday"),
 
+    monthlyIncomeTotal: document.getElementById("monthlyIncomeTotal"),
+    monthlyExpenseTotal: document.getElementById("monthlyExpenseTotal"),
+    monthlyNetTotal: document.getElementById("monthlyNetTotal"),
+    monthlyTypeTbody: document.getElementById("monthlyTypeTbody"),
+    monthlySupplierTbody: document.getElementById("monthlySupplierTbody"),
+
     tabButtons: Array.from(document.querySelectorAll(".tab-btn[data-tab]")),
     tabPanels: Array.from(document.querySelectorAll(".tab-panel[data-tab-panel]")),
 
@@ -64,9 +70,15 @@
       incomeCountToday: 0,
       expenseCountToday: 0
     },
+    monthly: {
+      incomeTotal: 0,
+      expenseTotal: 0
+    },
     unsub: {
       overviewIncome: null,
       overviewExpenses: null,
+      monthlyIncome: null,
+      monthlyExpenses: null,
       incomeList: null,
       expenseList: null
     }
@@ -238,6 +250,8 @@
     });
     state.unsub.overviewIncome = null;
     state.unsub.overviewExpenses = null;
+    state.unsub.monthlyIncome = null;
+    state.unsub.monthlyExpenses = null;
     state.unsub.incomeList = null;
     state.unsub.expenseList = null;
   }
@@ -324,6 +338,137 @@
       els.cardNetToday.style.color = net >= 0 ? "var(--good)" : "var(--bad)";
     }
     if (els.cardEntriesToday) els.cardEntriesToday.textContent = String(entries);
+  }
+
+  function updateMonthlyCards() {
+    const income = state.monthly.incomeTotal || 0;
+    const expenses = state.monthly.expenseTotal || 0;
+    const net = income - expenses;
+
+    if (els.monthlyIncomeTotal) els.monthlyIncomeTotal.textContent = formatMoneyALL(income);
+    if (els.monthlyExpenseTotal) els.monthlyExpenseTotal.textContent = formatMoneyALL(expenses);
+    if (els.monthlyNetTotal) {
+      els.monthlyNetTotal.textContent = formatMoneyALL(net);
+      els.monthlyNetTotal.style.color = net >= 0 ? "var(--good)" : "var(--bad)";
+    }
+  }
+
+  function renderMonthlyBreakdown(tbody, rows) {
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    if (!rows.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 3;
+      td.className = "empty";
+      td.textContent = "Nuk ka të dhëna.";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+
+      const nameTd = document.createElement("td");
+      nameTd.textContent = safeText(row.name);
+      tr.appendChild(nameTd);
+
+      const totalTd = document.createElement("td");
+      totalTd.textContent = formatMoneyALL(row.total);
+      tr.appendChild(totalTd);
+
+      const countTd = document.createElement("td");
+      countTd.textContent = String(row.count || 0);
+      tr.appendChild(countTd);
+
+      tbody.appendChild(tr);
+    }
+  }
+
+  function subscribeMonthlySummary() {
+    state.unsub.monthlyIncome?.();
+    state.unsub.monthlyExpenses?.();
+
+    const start = startOfMonth(new Date());
+    const end = startOfTomorrow();
+    const startTs = firebase.firestore.Timestamp.fromDate(start);
+    const endTs = firebase.firestore.Timestamp.fromDate(end);
+
+    const incomeQuery = db
+      .collection("income_entries")
+      .where("createdAt", ">=", startTs)
+      .where("createdAt", "<", endTs);
+
+    const expenseQuery = db
+      .collection("expenses")
+      .where("createdAt", ">=", startTs)
+      .where("createdAt", "<", endTs);
+
+    state.unsub.monthlyIncome = incomeQuery.onSnapshot(
+      (snap) => {
+        let sum = 0;
+        snap.forEach((doc) => {
+          const data = doc.data();
+          if (data?.status === "deleted") return;
+          sum += Number(data.amount || 0);
+        });
+        state.monthly.incomeTotal = sum;
+        updateMonthlyCards();
+      },
+      (err) => {
+        console.error("Monthly income listener error", err);
+        toast("error", "Gabim", "Nuk u lexuan tÃ« ardhurat (muaji).");
+      }
+    );
+
+    state.unsub.monthlyExpenses = expenseQuery.onSnapshot(
+      (snap) => {
+        let sum = 0;
+        const byType = new Map();
+        const bySupplier = new Map();
+
+        snap.forEach((doc) => {
+          const data = doc.data();
+          if (data?.status === "deleted") return;
+
+          const amount = Number(data.amount || 0);
+          sum += amount;
+
+          const typeKey = getDisplayType(data) || "â€”";
+          const supplierKey = getDisplaySupplier(data) || "â€”";
+
+          const typeAgg = byType.get(typeKey) || { total: 0, count: 0 };
+          typeAgg.total += amount;
+          typeAgg.count += 1;
+          byType.set(typeKey, typeAgg);
+
+          const supplierAgg = bySupplier.get(supplierKey) || { total: 0, count: 0 };
+          supplierAgg.total += amount;
+          supplierAgg.count += 1;
+          bySupplier.set(supplierKey, supplierAgg);
+        });
+
+        state.monthly.expenseTotal = sum;
+        updateMonthlyCards();
+
+        const typeRows = Array.from(byType.entries())
+          .map(([name, agg]) => ({ name, total: agg.total, count: agg.count }))
+          .sort((a, b) => (b.total || 0) - (a.total || 0));
+
+        const supplierRows = Array.from(bySupplier.entries())
+          .map(([name, agg]) => ({ name, total: agg.total, count: agg.count }))
+          .sort((a, b) => (b.total || 0) - (a.total || 0));
+
+        renderMonthlyBreakdown(els.monthlyTypeTbody, typeRows);
+        renderMonthlyBreakdown(els.monthlySupplierTbody, supplierRows);
+      },
+      (err) => {
+        console.error("Monthly expense listener error", err);
+        toast("error", "Gabim", "Nuk u lexuan shpenzimet (muaji).");
+      }
+    );
   }
 
   function subscribeOverview() {
@@ -660,6 +805,10 @@
     state.overview.incomeCountToday = 0;
     state.overview.expenseCountToday = 0;
 
+    state.monthly.incomeTotal = 0;
+    state.monthly.expenseTotal = 0;
+    updateMonthlyCards();
+
     buildUmbrellaCountOptions();
     toggleUmbrellaCount();
     toggleExpenseTypeCustom();
@@ -668,6 +817,7 @@
     setActiveButtons(els.incomeFilters, "button[data-range]", state.incomeRange);
     setActiveButtons(els.expenseFilters, "button[data-range]", state.expenseRange);
     subscribeOverview();
+    subscribeMonthlySummary();
     subscribeIncomeList(state.incomeRange);
     subscribeExpenseList(state.expenseRange);
     setBusy(false);
