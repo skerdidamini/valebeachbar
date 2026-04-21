@@ -687,6 +687,7 @@
       state.currentAuthUser = user || null;
       state.currentProfile = null;
       if (!user) {
+        sessionStorage.setItem("postLoginRedirect", "/financa/");
         window.location.replace("/admin/");
         return;
       }
