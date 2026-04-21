@@ -1,1 +1,332 @@
+<!DOCTYPE html>
+<html lang="sq">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vale Beach Bar · Financa</title>
+    <link rel="stylesheet" href="finance.css?v=20260421-1" />
+  </head>
+  <body>
+    <div class="finance-app" id="financeApp" aria-busy="true">
+      <header class="app-header">
+        <div class="logo">Vale Admin</div>
+        <div class="session">
+          <a class="ghost-btn" href="/admin/" style="text-decoration: none">Admin</a>
+          <span id="sessionUser" class="session-user">Duke u lidhur…</span>
+          <button id="logoutBtn" class="ghost-btn" type="button">Logout</button>
+        </div>
+      </header>
+
+      <main class="app-main">
+        <section class="panel">
+          <div class="panel-head">
+            <h1>Financa</h1>
+            <p class="muted">Hyrjet & shpenzimet (private)</p>
+          </div>
+
+          <div class="cards-grid">
+            <div class="stat-card">
+              <p class="label">Të ardhurat sot</p>
+              <strong id="cardIncomeToday">—</strong>
+            </div>
+            <div class="stat-card">
+              <p class="label">Shpenzimet sot</p>
+              <strong id="cardExpensesToday">—</strong>
+            </div>
+            <div class="stat-card">
+              <p class="label">Neto sot</p>
+              <strong id="cardNetToday">—</strong>
+            </div>
+            <div class="stat-card">
+              <p class="label">Hyrje sot</p>
+              <strong id="cardEntriesToday">—</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="tabs">
+            <button class="tab-btn is-active" type="button" data-tab="income">Të ardhurat</button>
+            <button class="tab-btn" type="button" data-tab="expenses">Shpenzimet</button>
+          </div>
+
+          <div class="tab-panels">
+            <section class="tab-panel is-active" id="tabIncome" data-tab-panel="income">
+              <div class="split">
+                <div class="form-card">
+                  <h2>Shto të ardhura</h2>
+                  <form id="incomeForm" autocomplete="off" novalidate>
+                    <div class="field-row">
+                      <label class="field">
+                        <span>Amount</span>
+                        <input
+                          id="incomeAmount"
+                          name="amount"
+                          type="number"
+                          inputmode="decimal"
+                          step="0.01"
+                          min="0"
+                          placeholder="0"
+                          required
+                        />
+                      </label>
+                    </div>
+
+                    <div class="field-row">
+                      <label class="field">
+                        <span>Category</span>
+                        <select id="incomeCategory" name="category" required>
+                          <option value="" selected disabled>Zgjidh…</option>
+                          <option value="Bar">Bar</option>
+                          <option value="Cadra">Cadra</option>
+                        </select>
+                      </label>
+
+                      <label class="field is-hidden" id="umbrellaCountWrap">
+                        <span>Nr. Cadrave</span>
+                        <select id="incomeUmbrellaCount" name="umbrellaCount"></select>
+                      </label>
+                    </div>
+
+                    <div class="field-row">
+                      <label class="field">
+                        <span>Payment Method</span>
+                        <select id="incomePaymentMethod" name="paymentMethod" required>
+                          <option value="" selected disabled>Zgjidh…</option>
+                          <option value="Cash">Cash</option>
+                          <option value="POS">POS</option>
+                        </select>
+                      </label>
+                    </div>
+
+                    <div class="actions">
+                      <button class="primary-btn" type="submit" id="incomeSaveBtn">Ruaj</button>
+                      <span class="inline-msg" id="incomeFormMsg" aria-live="polite"></span>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="list-card">
+                  <div class="list-head">
+                    <div>
+                      <h2>Të ardhurat</h2>
+                      <p class="muted">Vetëm aktive (status ≠ deleted)</p>
+                    </div>
+
+                    <div class="filters" id="incomeFilters">
+                      <button type="button" class="filter-btn is-active" data-range="today">Sot</button>
+                      <button type="button" class="filter-btn" data-range="week">Kjo javë</button>
+                      <button type="button" class="filter-btn" data-range="month">Ky muaj</button>
+                    </div>
+                  </div>
+
+                  <div class="filter-total">
+                    <span id="incomeTotalLabel">Totali</span>
+                    <strong id="incomeTotalAmount">—</strong>
+                  </div>
+
+                  <div class="table-wrap">
+                    <table class="data-table">
+                      <thead>
+                        <tr>
+                          <th>Ora</th>
+                          <th>Shuma</th>
+                          <th>Kategoria</th>
+                          <th>Nr. Cadrave</th>
+                          <th>Pagesa</th>
+                          <th>Delete</th>
+                        </tr>
+                      </thead>
+                      <tbody id="incomeTbody">
+                        <tr>
+                          <td colspan="6" class="empty">Duke ngarkuar…</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="tab-panel" id="tabExpenses" data-tab-panel="expenses">
+              <div class="split">
+                <div class="form-card">
+                  <h2>Shto shpenzim</h2>
+                  <form id="expenseForm" autocomplete="off" novalidate>
+                    <div class="field-row">
+                      <label class="field">
+                        <span>Amount</span>
+                        <input
+                          id="expenseAmount"
+                          name="amount"
+                          type="number"
+                          inputmode="decimal"
+                          step="0.01"
+                          min="0"
+                          placeholder="0"
+                          required
+                        />
+                      </label>
+                    </div>
+
+                    <div class="field-row">
+                      <label class="field">
+                        <span>Type</span>
+                        <select id="expenseType" name="type" required>
+                          <option value="" selected disabled>Zgjidh…</option>
+                          <option value="Lokal">Lokal</option>
+                          <option value="Kuzhinë">Kuzhinë</option>
+                          <option value="Plazh">Plazh</option>
+                          <option value="Naftë">Naftë</option>
+                          <option value="Pastrim">Pastrim</option>
+                          <option value="Investim">Investim</option>
+                          <option value="Paga stafi">Paga stafi</option>
+                          <option value="Energji">Energji</option>
+                          <option value="Të tjera">Të tjera</option>
+                        </select>
+                      </label>
+
+                      <label class="field is-hidden" id="expenseTypeCustomWrap">
+                        <span>Type (custom)</span>
+                        <input
+                          id="expenseTypeCustom"
+                          name="typeCustom"
+                          type="text"
+                          placeholder="Shkruaj llojin…"
+                        />
+                      </label>
+                    </div>
+
+                    <div class="field-row">
+                      <label class="field">
+                        <span>Supplier</span>
+                        <select id="expenseSupplier" name="supplier" required>
+                          <option value="" selected disabled>Zgjidh…</option>
+                          <option value="Dori Lajthiza">Dori Lajthiza</option>
+                          <option value="Agna Group">Agna Group</option>
+                          <option value="Triticum Food Pica">Triticum Food Pica</option>
+                          <option value="Driza">Driza</option>
+                          <option value="Eral">Eral</option>
+                          <option value="Perime">Perime</option>
+                          <option value="Quaranta">Quaranta</option>
+                          <option value="Jul Peshku">Jul Peshku</option>
+                          <option value="Të tjerë">Të tjerë</option>
+                        </select>
+                      </label>
+
+                      <label class="field is-hidden" id="expenseSupplierCustomWrap">
+                        <span>Supplier (custom)</span>
+                        <input
+                          id="expenseSupplierCustom"
+                          name="supplierCustom"
+                          type="text"
+                          placeholder="Shkruaj furnitorin…"
+                        />
+                      </label>
+                    </div>
+
+                    <div class="field-row">
+                      <label class="field">
+                        <span>Payment Method</span>
+                        <select id="expensePaymentMethod" name="paymentMethod">
+                          <option value="" selected>(Bosh)</option>
+                          <option value="Cash">Cash</option>
+                          <option value="Bank">Bank</option>
+                        </select>
+                      </label>
+                    </div>
+
+                    <div class="field-row">
+                      <label class="field">
+                        <span>Note</span>
+                        <textarea id="expenseNote" name="note" rows="3" placeholder="Përshkrimi…"></textarea>
+                      </label>
+                    </div>
+
+                    <div class="actions">
+                      <button class="primary-btn" type="submit" id="expenseSaveBtn">Ruaj</button>
+                      <span class="inline-msg" id="expenseFormMsg" aria-live="polite"></span>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="list-card">
+                  <div class="list-head">
+                    <div>
+                      <h2>Shpenzimet</h2>
+                      <p class="muted">Vetëm aktive (status ≠ deleted)</p>
+                    </div>
+
+                    <div class="filters" id="expenseFilters">
+                      <button type="button" class="filter-btn is-active" data-range="today">Sot</button>
+                      <button type="button" class="filter-btn" data-range="week">Kjo javë</button>
+                      <button type="button" class="filter-btn" data-range="month">Ky muaj</button>
+                    </div>
+                  </div>
+
+                  <div class="filter-total">
+                    <span id="expenseTotalLabel">Totali</span>
+                    <strong id="expenseTotalAmount">—</strong>
+                  </div>
+
+                  <div class="table-wrap">
+                    <table class="data-table">
+                      <thead>
+                        <tr>
+                          <th>Ora</th>
+                          <th>Shuma</th>
+                          <th>Lloji</th>
+                          <th>Furnitori</th>
+                          <th>Pagesa</th>
+                          <th>Përshkrimi</th>
+                          <th>Delete</th>
+                        </tr>
+                      </thead>
+                      <tbody id="expenseTbody">
+                        <tr>
+                          <td colspan="7" class="empty">Duke ngarkuar…</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <div class="toast-area" id="toastArea" aria-live="polite" aria-relevant="additions"></div>
+      <div class="overlay" id="loadingOverlay">
+        <div class="overlay-card">
+          <div class="spinner" aria-hidden="true"></div>
+          <p>Duke kontrolluar aksesin…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reuse the exact Firebase compat pattern used in /admin -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBdP80zCTQr3DluoDhn5aQDKVTVqhBVKQU",
+        authDomain: "vale-admin-a3c51.firebaseapp.com",
+        projectId: "vale-admin-a3c51",
+        storageBucket: "vale-admin-a3c51.firebasestorage.app",
+        messagingSenderId: "42562595285",
+        appId: "1:42562595285:web:6665e51bd4447d5f8a355c"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+
+      window.firebaseAuth = firebase.auth();
+      window.firebaseDB = firebase.firestore();
+    </script>
+
+    <script src="finance.js?v=20260421-1"></script>
+  </body>
+</html>
 
