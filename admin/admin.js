@@ -844,6 +844,13 @@ async function handleLogin(event) {
   try {
     await auth.signInWithEmailAndPassword(email, password);
     resetLoginMessage();
+
+    const redirectTarget = sessionStorage.getItem("postLoginRedirect");
+    if (redirectTarget && redirectTarget.startsWith("/")) {
+      sessionStorage.removeItem("postLoginRedirect");
+      window.location.replace(redirectTarget);
+      return false;
+    }
   } catch (error) {
     console.error(error);
     showLoginMessage("Invalid credentials.");
