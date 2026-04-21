@@ -21,7 +21,10 @@
         <section class="panel">
           <div class="panel-head">
             <h1>Financa</h1>
-            <p class="muted">Hyrjet & shpenzimet (private)</p>
+            <div class="panel-actions">
+              <p class="muted">Hyrjet & shpenzimet (private)</p>
+              <button class="ghost-btn" id="exportExcelBtn" type="button">Export Excel</button>
+            </div>
           </div>
 
           <div class="cards-grid">
@@ -396,6 +399,7 @@
       window.firebaseDB = firebase.firestore();
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="finance.js?v=20260421-1"></script>
   </body>
 </html>

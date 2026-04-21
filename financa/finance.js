@@ -12,6 +12,7 @@
 
     sessionUser: document.getElementById("sessionUser"),
     logoutBtn: document.getElementById("logoutBtn"),
+    exportExcelBtn: document.getElementById("exportExcelBtn"),
 
     cardIncomeToday: document.getElementById("cardIncomeToday"),
     cardExpensesToday: document.getElementById("cardExpensesToday"),
@@ -112,6 +113,33 @@
       const m = String(date.getMinutes()).padStart(2, "0");
       return `${h}:${m}`;
     }
+  }
+
+  function formatDateISO(ts) {
+    if (!ts) return "—";
+    const date = ts.toDate ? ts.toDate() : ts instanceof Date ? ts : null;
+    if (!date) return "—";
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+
+  function formatTimeHM(ts) {
+    if (!ts) return "—";
+    const date = ts.toDate ? ts.toDate() : ts instanceof Date ? ts : null;
+    if (!date) return "—";
+    const h = String(date.getHours()).padStart(2, "0");
+    const m = String(date.getMinutes()).padStart(2, "0");
+    return `${h}:${m}`;
+  }
+
+  function todayISO() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
   }
 
   function rangeLabel(rangeKey) {
@@ -471,6 +499,103 @@
     );
   }
 
+  async function fetchActiveInRange(collectionName, rangeKey) {
+    const { start, end } = getRange(rangeKey);
+    const startTs = firebase.firestore.Timestamp.fromDate(start);
+    const endTs = firebase.firestore.Timestamp.fromDate(end);
+
+    const snap = await db
+      .collection(collectionName)
+      .where("createdAt", ">=", startTs)
+      .where("createdAt", "<", endTs)
+      .orderBy("createdAt", "desc")
+      .limit(1000)
+      .get();
+
+    const items = [];
+    snap.forEach((doc) => {
+      const data = doc.data();
+      if (data?.status === "deleted") return;
+      items.push({ id: doc.id, ...data });
+    });
+    return items;
+  }
+
+  function buildIncomeExportAoa(items) {
+    const header = ["Data", "Ora", "Shuma", "Kategoria", "Nr. Cadrave", "Metoda e pagesës", "Krijuar nga"];
+    const rows = items.map((item) => {
+      const date = formatDateISO(item.createdAt);
+      const time = formatTimeHM(item.createdAt);
+      const amount = Number(item.amount || 0);
+      const category = item.category || "";
+      const umbrella = category === "Cadra" ? safeText(item.umbrellaCount || "") : "-";
+      const payment = item.paymentMethod || "";
+      const createdBy = item.createdByName || item.createdBy || "";
+      return [date, time, amount, category, umbrella, payment, createdBy];
+    });
+    return [header, ...rows];
+  }
+
+  function buildExpenseExportAoa(items) {
+    const header = ["Data", "Ora", "Shuma", "Lloji", "Furnitori", "Metoda e pagesës", "Përshkrimi", "Krijuar nga"];
+    const rows = items.map((item) => {
+      const date = formatDateISO(item.createdAt);
+      const time = formatTimeHM(item.createdAt);
+      const amount = Number(item.amount || 0);
+      const type = getDisplayType(item) || "";
+      const supplier = getDisplaySupplier(item) || "";
+      const payment = item.paymentMethod || "";
+      const note = item.note || "";
+      const createdBy = item.createdByName || item.createdBy || "";
+      return [date, time, amount, type, supplier, payment, note, createdBy];
+    });
+    return [header, ...rows];
+  }
+
+  async function handleExportExcel() {
+    if (!state.currentAuthUser) {
+      toast("error", "Gabim", "Nuk je i loguar.");
+      return;
+    }
+
+    const xlsx = window.XLSX;
+    if (!xlsx || !xlsx.utils) {
+      toast("error", "Gabim", "XLSX library nuk u ngarkua.");
+      return;
+    }
+
+    if (els.exportExcelBtn) els.exportExcelBtn.disabled = true;
+
+    try {
+      const [incomeItems, expenseItems] = await Promise.all([
+        fetchActiveInRange("income_entries", state.incomeRange),
+        fetchActiveInRange("expenses", state.expenseRange)
+      ]);
+
+      if (!incomeItems.length && !expenseItems.length) {
+        toast("error", "Nuk ka të dhëna", "Nuk ka të dhëna për eksport.");
+        return;
+      }
+
+      const wb = xlsx.utils.book_new();
+
+      const incomeWs = xlsx.utils.aoa_to_sheet(buildIncomeExportAoa(incomeItems));
+      xlsx.utils.book_append_sheet(wb, incomeWs, "TeArdhurat");
+
+      const expenseWs = xlsx.utils.aoa_to_sheet(buildExpenseExportAoa(expenseItems));
+      xlsx.utils.book_append_sheet(wb, expenseWs, "Shpenzimet");
+
+      const filename = `financa-export-${todayISO()}.xlsx`;
+      xlsx.writeFile(wb, filename);
+      toast("success", "Sukses", "Eksporti u krye.");
+    } catch (err) {
+      console.error("Excel export failed", err);
+      toast("error", "Gabim", "Eksporti dështoi.");
+    } finally {
+      if (els.exportExcelBtn) els.exportExcelBtn.disabled = false;
+    }
+  }
+
   function subscribeOverview() {
     const { start, end } = getRange("today");
     const startTs = firebase.firestore.Timestamp.fromDate(start);
@@ -754,6 +879,8 @@
         window.location.replace("/admin/");
       }
     });
+
+    els.exportExcelBtn?.addEventListener("click", handleExportExcel);
 
     els.tabButtons.forEach((btn) => btn.addEventListener("click", () => setActiveTab(btn.getAttribute("data-tab"))));
     els.incomeCategory?.addEventListener("change", toggleUmbrellaCount);
