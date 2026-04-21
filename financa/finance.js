@@ -675,7 +675,12 @@
   }
 
   function attachAuthGate() {
+    console.log("FINANCE DEBUG: attachAuthGate started");
+    console.log("FINANCE DEBUG: window.firebaseAuth exists:", Boolean(window.firebaseAuth));
+    console.log("FINANCE DEBUG: window.firebaseDB exists:", Boolean(window.firebaseDB));
+
     if (!auth || !db) {
+      console.error("FINANCE DEBUG: Firebase auth or db missing");
       console.error("Firebase is not configured.");
       toast("error", "Gabim", "Firebase nuk është konfiguruar.");
       return;
@@ -684,22 +689,31 @@
     setBusy(true);
 
     auth.onAuthStateChanged(async (user) => {
+      console.log("FINANCE DEBUG: onAuthStateChanged fired");
+      console.log("FINANCE DEBUG: user:", user);
+
       stopSubscriptions();
       state.currentAuthUser = user || null;
       state.currentProfile = null;
       if (!user) {
+        console.log("FINANCE DEBUG: Redirecting to /admin/ because no auth user");
         window.location.replace("/admin/");
         return;
       }
       try {
+        console.log("FINANCE DEBUG: loading profile for uid:", user.uid);
         const profile = await loadProfileOrDeny(user);
+        console.log("FINANCE DEBUG: loaded profile:", profile);
         if (!profile) {
+          console.log("FINANCE DEBUG: Redirecting to /admin/ because profile was not found");
           await auth.signOut();
           window.location.replace("/admin/");
           return;
         }
         state.currentProfile = profile;
       } catch (err) {
+        console.error("FINANCE DEBUG: profile load failed", err);
+        console.error("FINANCE DEBUG: Redirecting to /admin/ because profile load failed");
         console.error("Failed to load user profile", err);
         await auth.signOut();
         window.location.replace("/admin/");
@@ -709,6 +723,7 @@
         const role = state.currentProfile.role ? ` (${state.currentProfile.role})` : "";
         els.sessionUser.textContent = `${state.currentProfile.name || user.email || "User"}${role}`;
       }
+      console.log("FINANCE DEBUG: access granted to /financa/");
       initAfterLogin();
     });
   }
