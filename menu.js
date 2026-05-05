@@ -21,8 +21,7 @@
       "tabs.streetfood": "Street Food & Quick Bites",
       "tabs.breakfast": "Mëngjesi",
       "tabs.waffle": "Waffle",
-      "tabs.burger": "Burger",
-      "tabs.share": "Për të Gjithë Ne"
+      "tabs.burger": "Burger"
     },
     en: {
       "nav.home": "Home",
@@ -45,8 +44,7 @@
       "tabs.streetfood": "Street Food & Quick Bites",
       "tabs.breakfast": "Breakfast",
       "tabs.waffle": "Waffle",
-      "tabs.burger": "Burger",
-      "tabs.share": "For Sharing"
+      "tabs.burger": "Burger"
     },
     it: {
       "nav.home": "Home",
@@ -69,8 +67,7 @@
       "tabs.streetfood": "Street Food & Quick Bites",
       "tabs.breakfast": "Colazione",
       "tabs.waffle": "Waffle",
-      "tabs.burger": "Burger",
-      "tabs.share": "Per Tutti"
+      "tabs.burger": "Burger"
     }
   };
 
