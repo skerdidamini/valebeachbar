@@ -14,6 +14,7 @@ const ordersRef = db.collection("orders");
 
 const params = new URLSearchParams(window.location.search);
 const umbrellaParam = params.get("u");
+const tableParam = params.get("t");
 
 const umbrellaEl = document.getElementById("umbrellaNumber");
 const umbrellaLabelText = document.getElementById("umbrellaLabelText");
@@ -35,13 +36,50 @@ const langButtons = document.querySelectorAll(".lang-btn");
 const LANG_KEY = "valeMenuLanguage";
 const SUPPORTED_LANGS = ["sq", "en", "it"];
 
+const parseLocationParam = (type, value, max) => {
+  if (!value || !/^\d+$/.test(value)) return null;
+
+  const number = Number(value);
+  if (number < 1 || number > max) return null;
+
+  return {
+    type,
+    number,
+    labelSq: type === "umbrella" ? `Çadra ${number}` : `Tavolina ${number}`,
+  };
+};
+
+const locationInfo = umbrellaParam
+  ? parseLocationParam("umbrella", umbrellaParam, 100)
+  : parseLocationParam("table", tableParam, 50);
+
+const buildLocationPayload = () => {
+  if (!locationInfo) return {};
+
+  const payload = {
+    locationType: locationInfo.type,
+    locationNumber: locationInfo.number,
+    locationLabel: locationInfo.labelSq,
+  };
+
+  if (locationInfo.type === "umbrella") {
+    payload.umbrella = locationInfo.number;
+    payload.umbrellaNumber = locationInfo.number;
+  } else {
+    payload.tableNumber = locationInfo.number;
+  }
+
+  return payload;
+};
+
 if (!localStorage.getItem(LANG_KEY)) {
   localStorage.setItem(LANG_KEY, "sq");
 }
 
 const uiText = {
   sq: {
-    umbrella: "Cadra",
+    umbrella: "Çadra",
+    table: "Tavolina",
     callWaiter: "Thërrit Kamarierin",
     sendOrder: "Dërgo Porosinë",
     quickMenu: "Menu e Shpejtë",
@@ -56,23 +94,23 @@ const uiText = {
     msgWaitBeforeCall:
       "Ju lutem prisni pak para se ta thërrisni sërish kamarierin.",
     msgSendingWaiter: "Po dërgohet kërkesa për kamarierin…",
-    msgWaiterRequested: (umbrellaNumber) =>
-      `Kamarieri u njoftua për cadrën ${umbrellaNumber}.`,
+    msgWaiterRequested: (locationLabel) =>
+      `Kamarieri u njoftua për ${locationLabel}.`,
     msgWaiterFailed: "Kërkesa nuk u dërgua dot. Provoni sërish pas pak.",
     msgAddItemsFirst: "Ju lutem shtoni fillimisht produkte.",
     msgWaitBeforeOrder:
       "Ju lutem prisni pak para se të dërgoni një porosi tjetër.",
     msgSendingOrder: "Po dërgohet porosia…",
-    msgOrderSent: (umbrellaNumber) =>
-      `Porosia u dërgua për cadrën ${umbrellaNumber}.`,
+    msgOrderSent: (locationLabel) => `Porosia u dërgua për ${locationLabel}.`,
     msgOrderFailed: "Porosia nuk u dërgua dot. Provoni sërish pas pak.",
     msgUmbrellaNotIdentified:
-      "Cadra nuk u identifikua. Ju lutem skanoni përsëri kodin QR të cadrës suaj.",
+      "Lokacioni nuk u identifikua. Ju lutem skanoni përsëri kodin QR.",
     msgUmbrellaMissing:
-      "Mungon identifikimi i cadrës. Ju lutem skanoni përsëri kodin QR.",
+      "Mungon identifikimi i lokacionit. Ju lutem skanoni përsëri kodin QR.",
   },
   en: {
     umbrella: "Umbrella",
+    table: "Table",
     callWaiter: "Call Waiter",
     sendOrder: "Send Order",
     quickMenu: "Quick Menu",
@@ -86,21 +124,21 @@ const uiText = {
     itemCountPlural: "items",
     msgWaitBeforeCall: "Please wait before calling again.",
     msgSendingWaiter: "Sending waiter request…",
-    msgWaiterRequested: (umbrellaNumber) =>
-      `Waiter requested for Umbrella ${umbrellaNumber}.`,
+    msgWaiterRequested: (locationLabel) =>
+      `Waiter requested for ${locationLabel}.`,
     msgWaiterFailed: "Unable to send the request. Try again shortly.",
     msgAddItemsFirst: "Please add items first.",
     msgWaitBeforeOrder: "Please wait before sending another order.",
     msgSendingOrder: "Sending order…",
-    msgOrderSent: (umbrellaNumber) =>
-      `Order sent for Umbrella ${umbrellaNumber}.`,
+    msgOrderSent: (locationLabel) => `Order sent for ${locationLabel}.`,
     msgOrderFailed: "Unable to send the order. Try again soon.",
     msgUmbrellaNotIdentified:
-      "Umbrella not identified. Please scan the QR code on your umbrella again.",
-    msgUmbrellaMissing: "Umbrella missing. Scan the QR code again.",
+      "Location not identified. Please scan the QR code again.",
+    msgUmbrellaMissing: "Location missing. Scan the QR code again.",
   },
   it: {
     umbrella: "Ombrellone",
+    table: "Tavolo",
     callWaiter: "Chiama il Cameriere",
     sendOrder: "Invia l'Ordine",
     quickMenu: "Menu Rapido",
@@ -114,19 +152,18 @@ const uiText = {
     itemCountPlural: "prodotti",
     msgWaitBeforeCall: "Attendi prima di richiamare di nuovo.",
     msgSendingWaiter: "Invio della richiesta al cameriere…",
-    msgWaiterRequested: (umbrellaNumber) =>
-      `Cameriere richiesto per l'ombrellone ${umbrellaNumber}.`,
+    msgWaiterRequested: (locationLabel) =>
+      `Cameriere richiesto per ${locationLabel}.`,
     msgWaiterFailed: "Impossibile inviare la richiesta. Riprova tra poco.",
     msgAddItemsFirst: "Aggiungi prima dei prodotti.",
     msgWaitBeforeOrder: "Attendi prima di inviare un altro ordine.",
     msgSendingOrder: "Invio dell'ordine…",
-    msgOrderSent: (umbrellaNumber) =>
-      `Ordine inviato per l'ombrellone ${umbrellaNumber}.`,
+    msgOrderSent: (locationLabel) => `Ordine inviato per ${locationLabel}.`,
     msgOrderFailed: "Impossibile inviare l'ordine. Riprova tra poco.",
     msgUmbrellaNotIdentified:
-      "Ombrellone non identificato. Scansiona di nuovo il codice QR del tuo ombrellone.",
+      "Posizione non identificata. Scansiona di nuovo il codice QR.",
     msgUmbrellaMissing:
-      "Manca l'identificazione dell'ombrellone. Scansiona di nuovo il codice QR.",
+      "Manca l'identificazione della posizione. Scansiona di nuovo il codice QR.",
   },
 };
 
@@ -136,6 +173,12 @@ const getCurrentLanguage = () => {
 };
 
 const getUIText = () => uiText[getCurrentLanguage()] || uiText.sq;
+
+const getDisplayLocationLabel = () => {
+  const t = getUIText();
+  const label = locationInfo?.type === "table" ? t.table : t.umbrella;
+  return `${label} ${locationInfo?.number ?? "—"}`;
+};
 
 const showMessage = (text, variant = "success") => {
   messageArea.textContent = text;
@@ -373,7 +416,10 @@ const renderCategoryShortcuts = () => {
 const updateStaticLabels = () => {
   const t = getUIText();
 
-  if (umbrellaLabelText) umbrellaLabelText.textContent = t.umbrella;
+  if (umbrellaLabelText) {
+    umbrellaLabelText.textContent =
+      locationInfo?.type === "table" ? t.table : t.umbrella;
+  }
   if (callBtn) callBtn.textContent = t.callWaiter;
   if (sendOrderBtn) sendOrderBtn.textContent = t.sendOrder;
   if (quickMenuTitle) quickMenuTitle.textContent = t.quickMenu;
@@ -455,16 +501,15 @@ const tryOncePer = (key, duration = 15000) => {
 
 refreshMenuDisplay();
 
-if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
-  const umbrellaNumber = Number(umbrellaParam);
-  umbrellaEl.textContent = umbrellaNumber;
+if (locationInfo) {
+  umbrellaEl.textContent = locationInfo.number;
   callBtn.disabled = false;
   sendOrderBtn.disabled = false;
 
   callBtn.addEventListener("click", async () => {
     const t = getUIText();
 
-    if (!tryOncePer(`lastWaiter_${umbrellaNumber}`, 12000)) {
+    if (!tryOncePer(`lastWaiter_${locationInfo.type}_${locationInfo.number}`, 12000)) {
       showMessage(t.msgWaitBeforeCall, "error");
       return;
     }
@@ -474,12 +519,12 @@ if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
 
     try {
       await waiterCalls.add({
-        umbrella: umbrellaNumber,
+        ...buildLocationPayload(),
         status: "pending",
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         source: "qr",
       });
-      showMessage(t.msgWaiterRequested(umbrellaNumber));
+      showMessage(t.msgWaiterRequested(getDisplayLocationLabel()));
     } catch (error) {
       console.error(error);
       showMessage(t.msgWaiterFailed, "error");
@@ -499,7 +544,7 @@ if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
       return;
     }
 
-    if (!tryOncePer(`lastOrder_${umbrellaNumber}`, 12000)) {
+    if (!tryOncePer(`lastOrder_${locationInfo.type}_${locationInfo.number}`, 12000)) {
       showMessage(t.msgWaitBeforeOrder, "error");
       return;
     }
@@ -517,7 +562,7 @@ if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
       }));
 
       await ordersRef.add({
-        umbrella: umbrellaNumber,
+        ...buildLocationPayload(),
         items: payloadItems,
         note: orderNote.value.trim(),
         total,
@@ -536,7 +581,7 @@ if (umbrellaParam && !isNaN(Number(umbrellaParam))) {
 
       orderNote.value = "";
       refreshMenuDisplay();
-      showMessage(t.msgOrderSent(umbrellaNumber));
+      showMessage(t.msgOrderSent(getDisplayLocationLabel()));
     } catch (error) {
       console.error(error);
       showMessage(t.msgOrderFailed, "error");

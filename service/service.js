@@ -32,6 +32,25 @@ const formatTimestamp = (timestamp) => {
   }).format(date);
 };
 
+const getLocationLabel = (data) => {
+  if (data.locationLabel) return data.locationLabel;
+
+  if (data.locationType === "table" && data.locationNumber) {
+    return `Tavolina ${data.locationNumber}`;
+  }
+
+  if (data.tableNumber) {
+    return `Tavolina ${data.tableNumber}`;
+  }
+
+  const umbrellaNumber = data.umbrellaNumber ?? data.umbrella;
+  if (umbrellaNumber) {
+    return `Çadra ${umbrellaNumber}`;
+  }
+
+  return "Lokacioni —";
+};
+
 const createCallCard = (doc) => {
   const data = doc.data();
   const status = (data.status || "pending").toLowerCase();
@@ -41,7 +60,7 @@ const createCallCard = (doc) => {
   const info = document.createElement("div");
   info.className = "call-info";
   const umbrella = document.createElement("strong");
-  umbrella.textContent = "Umbrella " + (data.umbrella ?? "—");
+  umbrella.textContent = getLocationLabel(data);
   const time = document.createElement("span");
   time.textContent = formatTimestamp(data.createdAt);
   const badge = document.createElement("span");
@@ -117,7 +136,7 @@ const renderOrders = (docs, newIds = new Set()) => {
     const info = document.createElement("div");
     info.className = "call-info";
     const umbrella = document.createElement("strong");
-    umbrella.textContent = "Umbrella " + (data.umbrella ?? "—");
+    umbrella.textContent = getLocationLabel(data);
     const time = document.createElement("span");
     time.textContent = formatTimestamp(data.createdAt);
     const badge = document.createElement("span");
