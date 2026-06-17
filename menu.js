@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   const translations = {
     sq: {
       "nav.home": "Kreu",
@@ -6,7 +6,7 @@
       "nav.call": "Telefono",
       "hero.menuTitle": "Menuja Jonë",
       "hero.eyebrow": "Menu Vale Beach Bar",
-      "hero.heroCopy": "Zbulo menunë e Vale Beach Bar në Zvërnec, Vlorë — kafe, cocktails, pizza, specialitete deti, breakfast, waffle dhe beach bites të shërbyera shpejt dhe me shije.",
+      "hero.heroCopy": "Zbulo menunë e Vale Beach Bar në Zvërnec, Vlorë — kafe, cocktails, pizza, specialitete deti, breakfast dhe beach bites të shërbyera shpejt dhe me shije.",
       "footer.line": "Shfleto, skano dhe shijo Vale.",
       "tabs.kafeteria": "Kafeteria",
       "tabs.freskuese": "Freskuese",
@@ -19,9 +19,7 @@
       "tabs.chicken": "Pulë & Grill",
       "tabs.pizza": "Pizza",
       "tabs.streetfood": "Street Food & Quick Bites",
-      "tabs.breakfast": "Mëngjesi",
-      "tabs.waffle": "Waffle",
-      "tabs.burger": "Burger"
+      "tabs.breakfast": "Mëngjesi"
     },
     en: {
       "nav.home": "Home",
@@ -29,7 +27,7 @@
       "nav.call": "Call",
       "hero.menuTitle": "Our Menu",
       "hero.eyebrow": "Vale Beach Bar Menu",
-      "hero.heroCopy": "Explore the Vale Beach Bar menu in Zvernec, Vlore — coffee, cocktails, pizza, seafood, breakfast, waffles, and beach bites served quickly and with flavor.",
+      "hero.heroCopy": "Explore the Vale Beach Bar menu in Zvernec, Vlore — coffee, cocktails, pizza, seafood, breakfast and beach bites served quickly and with flavor.",
       "footer.line": "Browse, scan, and enjoy Vale.",
       "tabs.kafeteria": "Coffee Bar",
       "tabs.freskuese": "Soft Drinks",
@@ -42,9 +40,7 @@
       "tabs.chicken": "Chicken & Grill",
       "tabs.pizza": "Pizza",
       "tabs.streetfood": "Street Food & Quick Bites",
-      "tabs.breakfast": "Breakfast",
-      "tabs.waffle": "Waffle",
-      "tabs.burger": "Burger"
+      "tabs.breakfast": "Breakfast"
     },
     it: {
       "nav.home": "Home",
@@ -52,7 +48,7 @@
       "nav.call": "Chiama",
       "hero.menuTitle": "Il Nostro Menu",
       "hero.eyebrow": "Menu Vale Beach Bar",
-      "hero.heroCopy": "Scopri il menu di Vale Beach Bar a Zvërnec, Valona — caffè, cocktail, pizza, specialità di mare, colazione, waffle e beach bites serviti in modo veloce e gustoso.",
+      "hero.heroCopy": "Scopri il menu di Vale Beach Bar a Zvërnec, Valona — caffè, cocktail, pizza, specialità di mare, colazione e beach bites serviti in modo veloce e gustoso.",
       "footer.line": "Sfoglia, scansiona e goditi Vale.",
       "tabs.kafeteria": "Caffetteria",
       "tabs.freskuese": "Bibite",
@@ -65,9 +61,7 @@
       "tabs.chicken": "Pollo & Grill",
       "tabs.pizza": "Pizza",
       "tabs.streetfood": "Street Food & Quick Bites",
-      "tabs.breakfast": "Colazione",
-      "tabs.waffle": "Waffle",
-      "tabs.burger": "Burger"
+      "tabs.breakfast": "Colazione"
     }
   };
 
